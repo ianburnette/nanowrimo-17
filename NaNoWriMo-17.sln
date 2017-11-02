@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaNoWriMo-17", "NaNoWriMo-17.csproj", "{F9341DEF-BCC7-F337-57F1-6E77BEE73DC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaNoWriMo-17.Plugins", "NaNoWriMo-17.Plugins.csproj", "{634F1214-C99C-EB17-2F9F-DFC5328E4817}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaNoWriMo-17.Editor", "NaNoWriMo-17.Editor.csproj", "{8BCBF8F7-0009-27C7-B5F4-944263D67CB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9341DEF-BCC7-F337-57F1-6E77BEE73DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9341DEF-BCC7-F337-57F1-6E77BEE73DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9341DEF-BCC7-F337-57F1-6E77BEE73DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9341DEF-BCC7-F337-57F1-6E77BEE73DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634F1214-C99C-EB17-2F9F-DFC5328E4817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634F1214-C99C-EB17-2F9F-DFC5328E4817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634F1214-C99C-EB17-2F9F-DFC5328E4817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634F1214-C99C-EB17-2F9F-DFC5328E4817}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BCBF8F7-0009-27C7-B5F4-944263D67CB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BCBF8F7-0009-27C7-B5F4-944263D67CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BCBF8F7-0009-27C7-B5F4-944263D67CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BCBF8F7-0009-27C7-B5F4-944263D67CB7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
