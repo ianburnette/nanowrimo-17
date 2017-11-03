@@ -13,7 +13,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Tiles
   - 
   - 
   - 
@@ -40,4 +40,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: tiles
+    uniqueID: 2032075341
+    locked: 0
+  - name: tile decoration
+    uniqueID: 1765902107
     locked: 0
