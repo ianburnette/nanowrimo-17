@@ -246,7 +246,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\BlockChildReference.cs" />
     <Compile Include="Assets\Easy Save 2\ES2Init.cs" />
     <Compile Include="Assets\Easy Save 2\Examples\Creating an Automatic Save Structure\ES2UniqueID.cs" />
     <Compile Include="Assets\Easy Save 2\Examples\Creating an Automatic Save Structure\UniqueGameLogic.cs" />
@@ -256,9 +255,13 @@
     <Compile Include="Assets\Easy Save 2\Examples\Shared Assets\Scripts\MyExampleScript.cs" />
     <Compile Include="Assets\Easy Save 2\Examples\Upload and Download a Texture\UploadDownloadTexture.cs" />
     <Compile Include="Assets\Easy Save 2\Types\ES2_AudioClip.cs" />
+    <Compile Include="Assets\GlobalBlockBehavior.cs" />
+    <Compile Include="Assets\Scripts\BlockGeneration.cs" />
     <Compile Include="Assets\Scripts\BlockIndividual.cs" />
     <Compile Include="Assets\Scripts\BlockMovement.cs" />
     <Compile Include="Assets\Scripts\BlockRise.cs" />
+    <Compile Include="Assets\Scripts\ColumnManagement.cs" />
+    <Compile Include="Assets\Scripts\GridManagement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Easy Save 2\changelog.txt" />

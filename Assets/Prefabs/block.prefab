@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 61151022447377396}
   - component: {fileID: 114912779457476390}
   m_Layer: 8
-  m_Name: tile
+  m_Name: block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1048211023407686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.468, y: -1.433, z: -0.1524374}
+  m_LocalPosition: {x: -2.557, y: -4.054, z: -0.1524374}
   m_LocalScale: {x: 1.3499999, y: 1.3500001, z: 1.1700001}
   m_Children:
   - {fileID: 4828476319136030}
@@ -129,7 +129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93938b53b2fade449ccab7bb941e395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeAlpha: 0
   sprites:
   - {fileID: 212727490787363590}
   - {fileID: 212645023142907052}

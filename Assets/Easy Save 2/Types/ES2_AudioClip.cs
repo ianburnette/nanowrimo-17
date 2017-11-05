@@ -49,11 +49,11 @@ public sealed class ES2_AudioClip : ES2Type
 				frequency = reader.reader.ReadInt32();
 				break;
 			case 4:
-#if UNITY_5_3_OR_NEWER
-				result = AudioClip.Create(name, samples, channels, frequency, false, false);
-#else
+				#if UNITY_5_3_OR_NEWER
 				result = AudioClip.Create(name, samples, channels, frequency, false);
-#endif
+				#else
+				result = AudioClip.Create(name, samples, channels, frequency, false);
+				#endif
 				result.SetData(reader.ReadArray<float>(new ES2_float()),0);
 				break;
 			default:

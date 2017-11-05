@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockChildReference : MonoBehaviour {
+public class GlobalBlockBehavior : MonoBehaviour {
 
     #region Private Variables
-    public static BlockChildReference publicBlockReference;
-    [SerializeField] Color fadeColor, normalColor;
+    public static GlobalBlockBehavior publicGlobalBlockBehavior;
+
+    [Header("Selection Variables")]
+    [SerializeField] Color fadeColor;
+    [SerializeField] Color normalColor;
     #endregion
 
     #region Public Properties
@@ -38,8 +41,8 @@ public class BlockChildReference : MonoBehaviour {
     #endregion
 
     #region Unity Functions
-    void OnEnable () {
-        publicBlockReference = this;
+    void Start () {
+        publicGlobalBlockBehavior = this;
 	}
 	
 	void Update () {

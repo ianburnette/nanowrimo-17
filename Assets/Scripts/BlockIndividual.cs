@@ -26,7 +26,7 @@ public class BlockIndividual : MonoBehaviour {
 #region Custom Functions
     public void Fade(bool state)
     {
-        Color currentTargetColor = state ? BlockChildReference.publicBlockReference.FadeColor : BlockChildReference.publicBlockReference.NormalColor;
+        Color currentTargetColor = state ? GlobalBlockBehavior.publicGlobalBlockBehavior.FadeColor : GlobalBlockBehavior.publicGlobalBlockBehavior.NormalColor;
         foreach (SpriteRenderer sprite in sprites)
             sprite.color = currentTargetColor;
     }
