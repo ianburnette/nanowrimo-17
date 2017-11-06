@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using System;
 
+[Serializable]
 public enum BlockType
 {
     none,
@@ -14,29 +13,20 @@ public enum BlockType
     water, 
     wood
 }
-[Serializable]
 public struct Block
 {
-    public GameObject myGO;
-    public BlockType myType;
-}
-[Serializable]
-public class BlockCell
-{
-    public bool empty = true;
-    public Block thisBlock;
+    public BlockType type;
+    public GameObject myGameObject;
 }
 
 public class ColumnManagement : MonoBehaviour {
     #region Private Variables
-    [SerializeField] int columnCount, maxRows, firstActiveRow;
-    [SerializeField] BlockCell[][] columns;
-    [SerializeField] BlockCell[] column0, column1, column2, column3, column4, column5, column6;
+    [SerializeField] int columnCount, rowCount, firstActiveRow;
 
-    [SerializeField] BlockCell currentBlockCell;
-    [SerializeField] bool currentBlockEmpty;
+    [SerializeField] Block[,] blockGrid;
+
     [SerializeField] GameObject currentBlockGO;
-    [SerializeField] BlockType currentBlockType;
+    [SerializeField] BlockType currentBlock;
     #endregion
 
     #region Public Properties
@@ -52,7 +42,6 @@ public class ColumnManagement : MonoBehaviour {
             columnCount = value;
         }
     }
-
     public int FirstActiveRow
     {
         get
@@ -65,122 +54,47 @@ public class ColumnManagement : MonoBehaviour {
             firstActiveRow = value;
         }
     }
-
-    public BlockCell[][] Columns
-    {
-        get
-        {
-            return columns;
-        }
-
-        set
-        {
-            columns = value;
-        }
-    }
     #endregion
 
     #region Unity Functions
     void Start () {
-        column0 = column1 = column2 = column3 = column4 = column5 = column6 = new BlockCell[maxRows];
-        for (int i = 0; i < column0.Length; i++)
-            column0[i] = new BlockCell();
-        for (int i = 0; i < column1.Length; i++)
-            column1[i] = new BlockCell();
-        for (int i = 0; i < column2.Length; i++)
-            column2[i] = new BlockCell();
-        for (int i = 0; i < column3.Length; i++)
-            column3[i] = new BlockCell();
-        for (int i = 0; i < column4.Length; i++)
-            column4[i] = new BlockCell();
-        for (int i = 0; i < column5.Length; i++)
-            column5[i] = new BlockCell();
-        for (int i = 0; i < column6.Length; i++)
-            column6[i] = new BlockCell();
-
-
-        columns = new BlockCell[7][];
-        columns[0] = column0;
-        columns[1] = column1;
-        columns[2] = column2;
-        columns[3] = column3;
-        columns[4] = column4;
-        columns[5] = column5;
-        columns[6] = column6;
+        InitializeBlockArray();
     }
-	
-	void Update () {
-		
-	}
 #endregion
 
 #region Custom Functions
+    void InitializeBlockArray()
+    {
+        blockGrid = new Block[columnCount, rowCount];
+    }
+
     public bool CellEmpty(int testRow, int testColumn)
     {
-        //print("checking empty: row " + testRow + " and column " + testColumn);
-        // currentBlockCell = GetCellData(testRow, testColumn);
-
-
-        if (GetCellEmptyState(testRow, testColumn))
+        if (blockGrid[testColumn, testRow].type == BlockType.none)
             return true;
-        //if (GetCellData(testRow, testColumn).empty)
-          //  return true;
         else
             return false;
     }
-    public void CategorizeBlock(int row, int column, Block thisBlock)
+    public void CategorizeBlock(int row, int column, GameObject blockToCategorize)
     {
-        //check for current occupant of cell here
-       // columns[column][row].empty = false;
-      //  columns[column][row].thisBlock = thisBlock;
+        //CHECK IF CELL IS OCCUPIED HERE 
+        //
+        //
+        //ASSIGN GIVEN VALUES TO THIS CELL NOW THAT IT'S EMPTY
+        print("attempting to categorize block in column " + column + " and row " + row);
+        blockGrid[column, row].myGameObject = blockToCategorize;
+        blockGrid[column, row].type = SelectRandomType();
     }
-    bool GetCellEmptyState(int row, int column)
+    BlockType SelectRandomType()
     {
-        BlockCell currentCell = GetCellData(row, column);
-        //print("current cell is " + currentBlockCell.containsBlock);
-        return currentCell.empty;// ? true : false;
+        BlockType type = GetRandomEnum<BlockType>();
+        return type;
     }
-    BlockCell GetCellData(int currentRow, int currentColumn)
+    static T GetRandomEnum <T>()
     {
-       // print("getting cell data for [" + currentColumn + "][" + currentRow + "]");
-
-        // print("columns length is " + columns[currentColumn].Length);
-       // currentBlockEmpty = column0[currentRow].containsBlock;//columns[currentColumn][currentRow].empty;
-      // if (column0[currentRow].thisBlock.myGO != null)
-       //     currentBlockGO = column0[currentRow].thisBlock.myGO;
-        //currentBlockType = columns[currentColumn][currentRow].thisBlock.myType;
-
-        return columns[currentColumn][currentRow];
-        /*
-        if (currentColumn == 0)
-        {
-            print("in column if statement");
-            return column0[currentRow];
-        }
-
-        switch (currentColumn)
-        {
-            case 0:
-                print("in 0");
-                return column0[currentRow];
-            case 1:
-                print("in 1");
-                return column1[currentRow];
-            case 2:
-                print("in 2");
-                return column2[currentRow];
-            case 3:
-                print("in 3");
-                return column3[currentRow];
-            case 4:
-                return column4[currentRow];
-            case 5:
-                return column5[currentRow];
-            case 6:
-                return column6[currentRow];
-        }
-        Debug.LogError("didn't find the right cell");
-        return column0[currentRow];*/
+        System.Array A = System.Enum.GetValues(typeof(T));
+        T V = (T)A.GetValue(UnityEngine.Random.Range(0, A.Length));
+        return V;
     }
 #endregion
 }

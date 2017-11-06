@@ -32,6 +32,7 @@ public class BlockGeneration : MonoBehaviour {
 #region Custom Functions
     IEnumerator GenerateBeginningOfRunBlocks()
     {
+        yield return new WaitForEndOfFrame();
         int blocksCreated = 0;
         int timesThroughLoop = 0;
         while (blocksCreated < blocksToCreate)
@@ -44,47 +45,52 @@ public class BlockGeneration : MonoBehaviour {
             //loop through available cells and create blocks in them as long as they're not empty
             for (int i = columnManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
             {
-                print("in a row");
                 for (int j = 0; j < columnManagement.ColumnCount; j++)
                 {
-                    print("in a column");
-                    bool empty = columnManagement.CellEmpty(i, j);
-                    if (Random.value < likelihoodOfGeneratingBlock && empty)
+                    print("placing in column "+ j);
+                    if (Random.value < likelihoodOfGeneratingBlock && columnManagement.CellEmpty(i, j))
                     {
-                        //print("in if");
-                        Block thisBlock = CreateBlock(
-                            GridManagement.publicGrid.GridOrigin + 
+                        print("placing block at " + GridManagement.publicGrid.GridOrigin);
+                        GameObject thisBlock = CreateBlock(
+                            GridManagement.publicGrid.GridOrigin +
                                 new Vector2(
                                     (GridManagement.publicGrid.ColumnWidth * j) + GridManagement.publicGrid.ColumnWidth / 2,
-                                    (GridManagement.publicGrid.RowHeight * i) + GridManagement.publicGrid.RowHeight / 2
-                                    ));
-                        columnManagement.CategorizeBlock(j,i, thisBlock);
+                                    (GridManagement.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridManagement.publicGrid.RowHeight / 2
+                                    )));
+                        columnManagement.CategorizeBlock(i, j, thisBlock);
                         blocksCreated++;
+                        if (blocksCreated >= blocksToCreate)
+                            break;
+                        print("blocks created is now " + blocksCreated);
                         yield return new WaitForEndOfFrame();
                     }
+                    else
+                    {
+                        print("but it's not empty");
+                        yield return new WaitForEndOfFrame();
+                    }
+                    yield return new WaitForEndOfFrame();
                 }
+                yield return new WaitForEndOfFrame();
             }
+            yield return new WaitForEndOfFrame();
             timesThroughLoop++;
         }
         yield return null;
     }
-    Block CreateBlock(Vector2 position)
+   
+    GameObject CreateBlock(Vector2 position)
     {
         GameObject createdBlock;
-        Block thisBlock;
         if (blockPool.TryGetNextObject(position, Quaternion.identity, out createdBlock))
         {
             createdBlock.transform.position = position;
-            thisBlock.myGO = createdBlock;
-            thisBlock.myType = BlockType.fire;
-            return thisBlock;
-    }
+            return createdBlock;
+        }
         else
         {
             Debug.LogError("no block found to create");
-            thisBlock.myGO = gameObject;
-            thisBlock.myType = BlockType.none;
-            return thisBlock;
+            return createdBlock;
         }
     }
     

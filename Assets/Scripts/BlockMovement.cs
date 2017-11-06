@@ -1,30 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class BlockMovement : MonoBehaviour {
+public class BlockMovement : MonoBehaviour
+{
 
     #region Private Variables
-    [Header("Input")]
-    [SerializeField] Vector3 mousePosition;
-    [SerializeField] Vector3 touchPosition;
-    [SerializeField] Vector2 inputPosition;
-    enum InputType { mouse, touch, none };
+    [SerializeField] PlayerInput playerInput;
 
     [Header("Dynamic Variables")]
-    InputType currentInputType;
-    Touch currentTouch;
     [SerializeField] GameObject currentlySelectedBlock;
     [SerializeField] BlockIndividual currentIndividualClass;
     [SerializeField] bool captureTouchPos, captureMousePos;
 
     [Header("UI Variables")]
-    [SerializeField] Transform selectionBlockReference;
+    [SerializeField]
+    Transform selectionBlockReference;
     [SerializeField] Vector2 offsetFromBlockCenter;
     [SerializeField] SpriteRenderer selectionReferenceSprite;
-
-
-
     #endregion
 
     #region Public Properties
@@ -32,125 +26,110 @@ public class BlockMovement : MonoBehaviour {
     #endregion
 
     #region Unity Functions
-    void Start() {
-
+    private void OnEnable()         //SUBSCRIBE TO RELEVANT INPUT EVENTS
+    {
+        PlayerInput.OnInputStarted += InputStart;
+        PlayerInput.OnInputEnded += InputEnd;
     }
-
-    void Update() {
-        if (Input.GetMouseButtonDown(0))
-            ClickedWithMouse();
-        if (Input.touches.Length > 0)
-            if (Input.GetTouch(0).phase == TouchPhase.Began)
-                TouchedWithFinger();
+    private void OnDisable()        //UNSUBSCRIBE FROM INPUT EVENTS
+    {
+        PlayerInput.OnInputStarted -= InputStart;
+        PlayerInput.OnInputEnded += InputEnd;
+    }
+    void Update()
+    {
+       
+        //THE PLAYER IS DRAGGING A BLOCK AROUND - KEEP TRACK OF WHERE THAT IS AND HANDLE THE MOVEMENT
         if (currentlySelectedBlock != null)
         {
             if (captureMousePos)
-                UpdatePosition(InputType.mouse);
+                playerInput.UpdatePosition(PlayerInput.InputType.mouse);
             else if (captureTouchPos)
-                UpdatePosition(InputType.touch);
+                playerInput.UpdatePosition(PlayerInput.InputType.touch);
             UpdateSelectionReference();
             HandleBlockMovement();
-            ListenForInputEnd();
+            if (!playerInput.StillReceivingInput())
+                ReleaseBlock();
         }
     }
     #endregion
 
     #region Custom Functions
+
     #region Input Functions
-    Vector3 GetMouseRay()
+    void InputStart()
     {
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        HitAtPosition(playerInput.InputPositionWorld);
     }
-    Vector3 GetTouchRay()
+    void InputEnd()
     {
-        return Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+        ReleaseBlock();
     }
-    void ClickedWithMouse()
+    bool HitAtPosition(Vector2 pos)                      //THE USER TOUCHED/CLICKED - ARE THEY HITTING A BLOCK AT THAT LOCATION?
     {
-        mousePosition = GetMouseRay();
-        currentInputType = InputType.mouse;
-        InputAtPosition(mousePosition);
-        captureMousePos = true;
-    }
-    void TouchedWithFinger()
-    {
-        touchPosition = GetTouchRay();
-        InputAtPosition(touchPosition);
-        captureTouchPos = true;
-    }
-    void InputAtPosition(Vector3 pos)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(pos, Vector2.zero);
+        RaycastHit2D hit = Physics2D.Raycast(pos, Vector3.forward);
         if (hit != false && hit.collider != null)
         {
             SelectBlock(hit.transform.gameObject);
-            ShowSelectionReference((Vector2)pos, (Vector2)hit.transform.position);
-            print("I'm hitting " + hit.collider.name);
+            ShowSelectionReference(hit.point, (Vector2)hit.transform.position);
+            return true;
         }
-    }
-    void ListenForInputEnd()
-    {
-      
-        if (currentInputType == InputType.mouse)
-            if (Input.GetMouseButtonUp(0))
-                ReleaseBlock();
-        if (currentInputType == InputType.touch)
-        {
-            currentTouch = Input.GetTouch(0);
-            if (currentTouch.phase == TouchPhase.Ended)
-                ReleaseBlock();
-        }
+        else
+            return false;
     }
     #endregion
-    #region Movement Behavior
 
+    #region Movement Behavior   
 
-    void SelectBlock(GameObject block)
+    void SelectBlock(GameObject block)                   //THE PLAYER HAS SELECTED A BLOCK - TELL THE BLOCK THAT IT'S BEEN SELECTED AND GET A REFERENCE TO IT
     {
         currentlySelectedBlock = block.transform.gameObject;
         currentIndividualClass = currentlySelectedBlock.GetComponent<BlockIndividual>();
         currentIndividualClass.Fade(true);
-
-
     }
-    void HandleBlockMovement()
+    void HandleBlockMovement()                           //THE PLAYER IS DRAGGING THE BLOCK - HANDLE IT'S SNAPPING TO COLUMNS AND DISPLACING OTHER BLOCKS
     {
-
+        Vector2 positionToSet = new Vector2(playerInput.InputPositionWorld.x, currentlySelectedBlock.transform.position.y);
+        Vector2 curBlockPos = currentlySelectedBlock.transform.position;
+        float differenceInPosition = positionToSet.x - curBlockPos.x;
+        if (Mathf.Abs(differenceInPosition) > GridManagement.publicGrid.ColumnWidth)
+        {
+            if (positionToSet.x > curBlockPos.x) //we're moving to the right
+                positionToSet.x = curBlockPos.x + GridManagement.publicGrid.ColumnWidth;
+            else                                 //we're moving to the left
+                positionToSet.x = curBlockPos.x - GridManagement.publicGrid.ColumnWidth;
+        }
+        else
+            positionToSet.x = curBlockPos.x;
+        currentlySelectedBlock.transform.position = positionToSet;
     }
-    void ReleaseBlock() {
-
-        //drop block code goes here
-        //send info to block here
+    void ReleaseBlock()
+    {                   //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
+                        //drop block code goes here
+                        //send info to block here
         currentIndividualClass.Fade(false);
         currentlySelectedBlock = null;
         currentIndividualClass = null;
-        currentInputType = InputType.none;
+       
         HideSelectionReference();
     }
     #endregion
     #region Selection
-    void ShowSelectionReference(Vector2 inputPosition, Vector2 selectedObjectPosition)
+    void ShowSelectionReference(Vector2 inputPosition, Vector2 selectedObjectPosition)  //THE PLAYER IS SELECTING A BLOCK - SHOW A UI INDICATOR TO SHOW WE'RE RECEIVING INPUT
     {
         selectionBlockReference.position = new Vector3(selectedObjectPosition.x, selectedObjectPosition.y, 0);
         selectionReferenceSprite.enabled = true;
         offsetFromBlockCenter = inputPosition - selectedObjectPosition;
     }
-    void UpdateSelectionReference()
+    void UpdateSelectionReference()                      //KEEP THE UI INDICATOR OF WHERE INPUT IS BEING RECEIVED MOVING AROUND WITH THE MOUSE/FINGER
     {
-        Vector3 unadjustedPos = Camera.main.ScreenToWorldPoint(inputPosition + offsetFromBlockCenter);
+        Vector3 unadjustedPos = Camera.main.ScreenToWorldPoint(playerInput.InputPositionScreen + offsetFromBlockCenter);
         selectionBlockReference.position = new Vector3(unadjustedPos.x, unadjustedPos.y, 0f);
     }
-    void HideSelectionReference()
+    void HideSelectionReference()                        //HIDE THE UI INDICATOR OF INPUT RECEIPT ONCE INPUT ISN'T BEING RECEIVED
     {
         selectionReferenceSprite.enabled = false;
     }
-    void UpdatePosition(InputType currentInputType)
-    {
-        if (currentInputType == InputType.mouse)
-            inputPosition = Input.mousePosition;
-        else
-            inputPosition = Input.GetTouch(0).position;
-    }
-    #endregion      
+    #endregion
     #endregion
 }
