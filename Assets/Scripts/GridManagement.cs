@@ -1,158 +1,131 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
-public class GridManagement : MonoBehaviour
+[Serializable]
+public struct GridCoordinates
 {
+    public int column;
+    public int row;
+}
 
+public class GridManagement : MonoBehaviour {
     #region Private Variables
-    public static GridManagement publicGrid;
+    [SerializeField] int columnCount, rowCount, firstActiveRow;
+    [SerializeField] BlockMovement blockMovement;
 
-    [Header("Debug Variables")]
-    [SerializeField]
-    bool showGridCenterLines;
-    [SerializeField] bool showGridOutlines;
-    [SerializeField] bool showGridOrigin;
+    [SerializeField] Block[,] blockGrid;
 
-    [Header("Grid Variables")]
-    [SerializeField] Vector2 gridOrigin;
-    [SerializeField] int columns;
-    [SerializeField] int rows;
-    [SerializeField] float rowHeight, columnWidth;
-    [SerializeField] float firstColumnXPosition, finalColumnXPosition;
+    [SerializeField] GridCoordinates gridQuery;
+    [SerializeField] BlockType queryBlockType;
+    [SerializeField] GameObject queryGameObject;
+    [SerializeField] GridCoordinates queryLocalGridPosition;
     #endregion
 
     #region Public Properties
-    public float RowHeight
+    public int ColumnCount
     {
         get
         {
-            return rowHeight;
+            return columnCount;
         }
 
         set
         {
-            rowHeight = value;
+            columnCount = value;
         }
     }
-
-    public float ColumnWidth
+    public int FirstActiveRow
     {
         get
         {
-            return columnWidth;
+            return firstActiveRow;
         }
 
         set
         {
-            columnWidth = value;
+            firstActiveRow = value;
         }
     }
-
-    public Vector2 GridOrigin
-    {
-        get
-        {
-            return gridOrigin;
-        }
-
-        set
-        {
-            gridOrigin = value;
-        }
-    }
-
-    public float FirstColumnXPosition
-    {
-        get
-        {
-            return firstColumnXPosition;
-        }
-
-        set
-        {
-            firstColumnXPosition = value;
-        }
-    }
-
-    public float FinalColumnXPosition
-    {
-        get
-        {
-            return finalColumnXPosition;
-        }
-
-        set
-        {
-            finalColumnXPosition = value;
-        }
-    }
-
     #endregion
 
     #region Unity Functions
-    void OnEnable()
-    {
-        publicGrid = this;
+    void Start () {
+        InitializeBlockArray();
     }
-    private void Start()
+    private void Update()
     {
-        firstColumnXPosition = gridOrigin.x + columnWidth / 2;
-        finalColumnXPosition = gridOrigin.x + (columnWidth * (columns-1)) + columnWidth / 2;
-    }
-    void Update()
-    {
-
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(new Vector3 (firstColumnXPosition,0,0), Vector3.one / 3);
-        Gizmos.DrawCube(new Vector3(finalColumnXPosition, 0, 0), Vector3.one / 3);
-        Gizmos.color = Color.cyan;
-        if (showGridOrigin)
-            Gizmos.DrawSphere(gridOrigin, .2f);
-
-        int i = 0;
-        Vector2 startingPosition;
-
-        if (showGridCenterLines)
-        {
-            Gizmos.color = Color.red;
-
-            for (i = 0; i < columns; i++)
-            {
-                startingPosition = new Vector2((gridOrigin.x + i * columnWidth) + columnWidth / 2, gridOrigin.y);
-                Gizmos.DrawLine(startingPosition, new Vector2(startingPosition.x, startingPosition.y + rowHeight * rows));
-            }
-            Gizmos.color = Color.green;
-            for (i = 0; i < rows; i++)
-            {
-                startingPosition = new Vector2(gridOrigin.x, (gridOrigin.y + i * rowHeight) + rowHeight / 2);
-                Gizmos.DrawLine(startingPosition, new Vector2(startingPosition.x + columnWidth * columns, startingPosition.y));
-            }
-        }
-        if (showGridOutlines)
-        {
-            Gizmos.color = Color.blue;
-            for (i = 0; i < columns + 1; i++)
-            {
-                startingPosition = new Vector2((gridOrigin.x + i * columnWidth), gridOrigin.y);
-                Gizmos.DrawLine(startingPosition, new Vector2(startingPosition.x, startingPosition.y + rowHeight * rows));
-            }
-            Gizmos.color = Color.magenta;
-            for (i = 0; i < rows + 1; i++)
-            {
-                startingPosition = new Vector2(gridOrigin.x, (gridOrigin.y + i * rowHeight));
-                Gizmos.DrawLine(startingPosition, new Vector2(startingPosition.x + columnWidth * columns, startingPosition.y));
-            }
-        }
-
+        if (Input.GetKeyDown(KeyCode.Y))
+            QueryCell();
     }
     #endregion
 
     #region Custom Functions
+    void QueryCell()                            //a debug function to see what is in a particular cell
+    {
+      /*  int x = Mathf.RoundToInt(gridQuery.x);
+        int y = Mathf.RoundToInt(gridQuery.y);
+        queryBlockType = blockGrid[x, y].type;
+        queryGameObject = blockGrid[x, y].myGameObject;
+        if (queryGameObject != null)
+            queryLocalGridPosition = blockGrid[x, y].myGameObject.GetComponent<BlockIndividual>().MyGridIndex;
+        else
+            queryLocalGridPosition = Vector2.zero;*/
+    }
+    void InitializeBlockArray()                                                     //SETS UP THE ARRAY TO BE THE CORRECT SIZE
+    {
+        blockGrid = new Block[columnCount, rowCount];
+    }
+    public bool CellEmpty(GridCoordinates gridCoords)                               //RETURNS TRUE IF CELL AT THESE COORDINATES IS EMPTY
+    {
+        if (blockGrid[gridCoords.column, gridCoords.row].type == BlockType.none)
+            return true;
+        else
+            return false;
+    }                            
+    public void PlaceNewBlock(GridCoordinates gridCoords, BlockIndividual blockScript)
+    { 
+        blockScript.MyGridCoords = gridCoords;
+        blockGrid[gridCoords.column, gridCoords.row].myGameObject = blockScript.gameObject;
+        blockGrid[gridCoords.column, gridCoords.row].type = blockScript.MyType;
+    }
+    public void PlaceEmptySpace(int row, int column)
+    {
+        blockGrid[column, row].myGameObject = null;
+        blockGrid[column, row].type = BlockType.none;
+    }
+    //
+    /*
+     * The purpose of this class is to keep track of what cells are where on the grid.
+     * I need the ability to assign data to any grid cell
+     * I need the ability to swap two blocks
+     * I need the ability to tell if any given grid cell is empty
+     * 
+     *  
+     * *.
+    /*
+     */
+     public void SwapBlocks(BlockIndividual incomingBlock, BlockIndividual outgoingBlock)
+     {
+        //update the grid to match the new blocks' positions and then send the call to physically move them
+        Block outgoing = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
+        Block incoming = blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row];
+        blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row] = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
+        //blockGrid[outgoingBlock.MyGridCoords.column]
+     }
+        /*
+    public void CategorizeBlock(int row, int column, BlockIndividual blockScript)                                 //UPDATE THE GRID VARIABLES AT THIS LOCATION WITH THE VARIABLES OF TH ENEW BLOCK
+    {
+        print("attempting to categorize block in column " + column + " and row " + row);
 
-    #endregion
+            print("displacing block of type " + blockGrid[column, row].type);                                     
+            int newCol = blockScript.MyGridCoords.column > column ? column + 1 : column - 1;                            //THERE'S SOMETHING HERE ALREADY - WE HAVE TO MOVE IT LEFT OR RIGHT
+            blockMovement.DisplaceBlock(blockGrid[newCol, row], blockScript.MyGridCoords);                         //WE DISPLACE THE BLOCK THAT IS ALREADY THERE TO WHERE THE NEW BLOCK WAS  
+            if (blockGrid[column, row].myGameObject == null)                                                      //WE CATEGORIZE WHERE THE OLD BLOCK HAS GONE
+                PlaceEmptySpace(row, newCol);                                                                       //even if it's empty
+            else
+                PlaceNewBlock(row, newCol, blockGrid[column, row].myGameObject.GetComponent<BlockIndividual>());  //and a different function if it's not
+            PlaceNewBlock(row, column, blockScript);                                                              //THEN WE OFFICIALLY CATEGORIZE THE NEW BLOCK
+    }
+    */
+#endregion
 }

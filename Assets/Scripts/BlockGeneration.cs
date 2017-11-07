@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(ColumnManagement))]
+[RequireComponent(typeof(GridManagement))]
 public class BlockGeneration : MonoBehaviour {
 
     #region Private Variables
-    [SerializeField] ColumnManagement columnManagement;
+    [SerializeField] GridManagement columnManagement;
     [SerializeField] EZObjectPools.EZObjectPool blockPool;
 
     [Header("Beginning of Run")]
@@ -52,10 +52,10 @@ public class BlockGeneration : MonoBehaviour {
                     {
                       //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
                         GameObject thisBlock = CreateBlock(
-                            GridManagement.publicGrid.GridOrigin +
+                            GridDebug.publicGrid.GridOrigin +
                                 new Vector2(
-                                    (GridManagement.publicGrid.ColumnWidth * j) + GridManagement.publicGrid.ColumnWidth / 2,
-                                    (GridManagement.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridManagement.publicGrid.RowHeight / 2
+                                    (GridDebug.publicGrid.ColumnWidth * j) + GridDebug.publicGrid.ColumnWidth / 2,
+                                    (GridDebug.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridDebug.publicGrid.RowHeight / 2
                                     )));
                         columnManagement.PlaceNewBlock(i, j, thisBlock.GetComponent<BlockIndividual>());
                         blocksCreated++;

@@ -6,23 +6,11 @@ public class BlockIndividual : MonoBehaviour {
 
     #region Private Variables
     [SerializeField] BlockType myType;
-    [SerializeField] Vector2 myGridIndex;
+    [SerializeField] GridCoordinates myGridCoords;
     [SerializeField] SpriteRenderer[] sprites;
     #endregion
 
     #region Public Properties
-        public Vector2 MyGridIndex
-        {
-            get
-            {
-                return myGridIndex;
-            }
-
-            set
-            {
-                myGridIndex = value;
-            }
-        }
         public BlockType MyType
     {
         get
@@ -33,6 +21,18 @@ public class BlockIndividual : MonoBehaviour {
         set
         {
             myType = value;
+        }
+    }
+        public GridCoordinates MyGridCoords
+    {
+        get
+        {
+            return myGridCoords;
+        }
+
+        set
+        {
+            myGridCoords = value;
         }
     }
     #endregion
