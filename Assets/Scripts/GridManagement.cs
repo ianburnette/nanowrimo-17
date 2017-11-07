@@ -19,6 +19,7 @@ public class GridManagement : MonoBehaviour
     [SerializeField] int columns;
     [SerializeField] int rows;
     [SerializeField] float rowHeight, columnWidth;
+    [SerializeField] float firstColumnXPosition, finalColumnXPosition;
     #endregion
 
     #region Public Properties
@@ -61,6 +62,32 @@ public class GridManagement : MonoBehaviour
         }
     }
 
+    public float FirstColumnXPosition
+    {
+        get
+        {
+            return firstColumnXPosition;
+        }
+
+        set
+        {
+            firstColumnXPosition = value;
+        }
+    }
+
+    public float FinalColumnXPosition
+    {
+        get
+        {
+            return finalColumnXPosition;
+        }
+
+        set
+        {
+            finalColumnXPosition = value;
+        }
+    }
+
     #endregion
 
     #region Unity Functions
@@ -68,7 +95,11 @@ public class GridManagement : MonoBehaviour
     {
         publicGrid = this;
     }
-
+    private void Start()
+    {
+        firstColumnXPosition = gridOrigin.x + columnWidth / 2;
+        finalColumnXPosition = gridOrigin.x + (columnWidth * (columns-1)) + columnWidth / 2;
+    }
     void Update()
     {
 
@@ -76,6 +107,9 @@ public class GridManagement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube(new Vector3 (firstColumnXPosition,0,0), Vector3.one / 3);
+        Gizmos.DrawCube(new Vector3(finalColumnXPosition, 0, 0), Vector3.one / 3);
         Gizmos.color = Color.cyan;
         if (showGridOrigin)
             Gizmos.DrawSphere(gridOrigin, .2f);

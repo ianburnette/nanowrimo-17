@@ -7,12 +7,18 @@ public class BlockMovement : MonoBehaviour
 {
 
     #region Private Variables
+    [Header("References")]
     [SerializeField] PlayerInput playerInput;
+    [SerializeField] ColumnManagement columnManagement;
 
     [Header("Dynamic Variables")]
     [SerializeField] GameObject currentlySelectedBlock;
     [SerializeField] BlockIndividual currentIndividualClass;
     [SerializeField] bool captureTouchPos, captureMousePos;
+
+
+    [Header("Behavior Variables")]
+    [SerializeField] float columnChangeMargin;
 
     [Header("UI Variables")]
     [SerializeField]
@@ -36,9 +42,12 @@ public class BlockMovement : MonoBehaviour
         PlayerInput.OnInputStarted -= InputStart;
         PlayerInput.OnInputEnded += InputEnd;
     }
+    private void Start()
+    {
+       // columnChangeMargin = GridManagement.publicGrid.ColumnWidth;
+    }
     void Update()
     {
-       
         //THE PLAYER IS DRAGGING A BLOCK AROUND - KEEP TRACK OF WHERE THAT IS AND HANDLE THE MOVEMENT
         if (currentlySelectedBlock != null)
         {
@@ -47,7 +56,7 @@ public class BlockMovement : MonoBehaviour
             else if (captureTouchPos)
                 playerInput.UpdatePosition(PlayerInput.InputType.touch);
             UpdateSelectionReference();
-            HandleBlockMovement();
+            EvaluateBlockMovement();
             if (!playerInput.StillReceivingInput())
                 ReleaseBlock();
         }
@@ -59,6 +68,7 @@ public class BlockMovement : MonoBehaviour
     #region Input Functions
     void InputStart()
     {
+        
         HitAtPosition(playerInput.InputPositionWorld);
     }
     void InputEnd()
@@ -67,7 +77,8 @@ public class BlockMovement : MonoBehaviour
     }
     bool HitAtPosition(Vector2 pos)                      //THE USER TOUCHED/CLICKED - ARE THEY HITTING A BLOCK AT THAT LOCATION?
     {
-        RaycastHit2D hit = Physics2D.Raycast(pos, Vector3.forward);
+      //  print("checking position " + pos);
+        RaycastHit2D hit = Physics2D.Raycast(new Vector3(pos.x, pos.y, -.5f), Vector3.forward);
         if (hit != false && hit.collider != null)
         {
             SelectBlock(hit.transform.gameObject);
@@ -75,7 +86,12 @@ public class BlockMovement : MonoBehaviour
             return true;
         }
         else
+        {
+          //  Debug.DrawRay(new Vector3(pos.x, pos.y, -.5f), Vector3.forward, Color.red);
+          //  EditorApplication.isPaused = true;
             return false;
+        }
+            
     }
     #endregion
 
@@ -87,31 +103,63 @@ public class BlockMovement : MonoBehaviour
         currentIndividualClass = currentlySelectedBlock.GetComponent<BlockIndividual>();
         currentIndividualClass.Fade(true);
     }
-    void HandleBlockMovement()                           //THE PLAYER IS DRAGGING THE BLOCK - HANDLE IT'S SNAPPING TO COLUMNS AND DISPLACING OTHER BLOCKS
+    void EvaluateBlockMovement()                           //THE PLAYER IS DRAGGING THE BLOCK - HANDLE IT'S SNAPPING TO COLUMNS AND DISPLACING OTHER BLOCKS
     {
         Vector2 positionToSet = new Vector2(playerInput.InputPositionWorld.x, currentlySelectedBlock.transform.position.y);
         Vector2 curBlockPos = currentlySelectedBlock.transform.position;
         float differenceInPosition = positionToSet.x - curBlockPos.x;
-        if (Mathf.Abs(differenceInPosition) > GridManagement.publicGrid.ColumnWidth)
+        if (Mathf.Abs(differenceInPosition) > columnChangeMargin)
         {
-            if (positionToSet.x > curBlockPos.x) //we're moving to the right
+            if (positionToSet.x > curBlockPos.x && positionToSet.x < GridManagement.publicGrid.FinalColumnXPosition)          //we're moving to the right
                 positionToSet.x = curBlockPos.x + GridManagement.publicGrid.ColumnWidth;
-            else                                 //we're moving to the left
+            else if (positionToSet.x < curBlockPos.x && positionToSet.x > GridManagement.publicGrid.FirstColumnXPosition)
+            {     //we're moving to the left
+           //     print("minimum is " + GridManagement.publicGrid.FirstColumnXPosition + " and this blocks x position is " + positionToSet.x);
                 positionToSet.x = curBlockPos.x - GridManagement.publicGrid.ColumnWidth;
+            }
         }
         else
             positionToSet.x = curBlockPos.x;
+
+        if (positionToSet.x != curBlockPos.x)//we're going to move the block in some direction
+        {
+            BlockIndividual currentBlockScript = currentlySelectedBlock.GetComponent<BlockIndividual>();
+            //the block is placed partially in the cell at this point - it displaces other blocks but doesn't yet match with others
+
+            int newBlockColumn = positionToSet.x > curBlockPos.x ? (int)currentBlockScript.MyGridIndex.x + 1 : (int)currentBlockScript.MyGridIndex.x - 1;
+            columnManagement.CategorizeBlock((int)currentBlockScript.MyGridIndex.y, newBlockColumn, currentlySelectedBlock.GetComponent<BlockIndividual>());
+            PlaceBlockInNewPosition(positionToSet);     
+        }
+    }
+
+    public void DisplaceBlock(Block blockToMove, Vector2 positionToMoveTo)
+    {
+        BlockIndividual displacedBlockScript = blockToMove.myGameObject.GetComponent<BlockIndividual>();
+        Vector2 positionToSet = blockToMove.myGameObject.transform.position;
+        if (positionToMoveTo.x > displacedBlockScript.MyGridIndex.x)
+            positionToSet.x = positionToSet.x + GridManagement.publicGrid.ColumnWidth;
+        else
+            positionToSet.x = positionToSet.x - GridManagement.publicGrid.ColumnWidth;
+        
+        BlockPlaced(currentIndividualClass);
+    }
+
+    void PlaceBlockInNewPosition(Vector2 positionToSet)
+    {
         currentlySelectedBlock.transform.position = positionToSet;
     }
-    void ReleaseBlock()
-    {                   //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
-                        //drop block code goes here
-                        //send info to block here
+    void ReleaseBlock()                                     //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
+    {
+        BlockPlaced(currentIndividualClass);
         currentIndividualClass.Fade(false);
         currentlySelectedBlock = null;
         currentIndividualClass = null;
        
         HideSelectionReference();
+    }
+    void BlockPlaced(BlockIndividual blockThatHasBeenPlaced)
+    {
+        //this block is officially in the grid now - check if it has any nearby matches
     }
     #endregion
     #region Selection

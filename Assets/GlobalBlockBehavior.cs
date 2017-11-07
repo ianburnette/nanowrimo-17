@@ -10,6 +10,11 @@ public class GlobalBlockBehavior : MonoBehaviour {
     [Header("Selection Variables")]
     [SerializeField] Color fadeColor;
     [SerializeField] Color normalColor;
+
+    [Header("Sprites")]
+    [SerializeField] Sprite fireSprite;
+    [SerializeField] Sprite iceSprite, ghostSprite, crateSprite, spiritSprite, waterSprite, woodSprite; 
+    
     #endregion
 
     #region Public Properties
@@ -51,6 +56,33 @@ public class GlobalBlockBehavior : MonoBehaviour {
 #endregion
 
 #region Custom Functions
-
+    public Sprite GetSprite(BlockType type)
+    {
+        switch (type)
+        {
+            case BlockType.fire:
+                return fireSprite;
+                
+            case BlockType.ice:
+                return iceSprite;
+                
+            case BlockType.ghost:
+                return ghostSprite;
+                
+            case BlockType.crate:
+                return crateSprite;
+                
+            case BlockType.spirit:
+                return spiritSprite;
+                
+            case BlockType.water:
+                return waterSprite;
+                
+            case BlockType.wood:
+                return woodSprite;
+                
+        }
+        return fireSprite;
+    }
 #endregion
 }

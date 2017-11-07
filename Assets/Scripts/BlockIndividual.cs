@@ -5,18 +5,43 @@ using UnityEngine;
 public class BlockIndividual : MonoBehaviour {
 
     #region Private Variables
-    
+    [SerializeField] BlockType myType;
+    [SerializeField] Vector2 myGridIndex;
     [SerializeField] SpriteRenderer[] sprites;
-#endregion
+    #endregion
 
-#region Public Properties
+    #region Public Properties
+        public Vector2 MyGridIndex
+        {
+            get
+            {
+                return myGridIndex;
+            }
 
-#endregion
+            set
+            {
+                myGridIndex = value;
+            }
+        }
+        public BlockType MyType
+    {
+        get
+        {
+            return myType;
+        }
 
-#region Unity Functions
-	void Start () {
-		
-	}
+        set
+        {
+            myType = value;
+        }
+    }
+    #endregion
+
+    #region Unity Functions
+    void OnEnable()
+    {
+        StartCoroutine(Setup());
+    }
 	
 	void Update () {
 		
@@ -24,6 +49,13 @@ public class BlockIndividual : MonoBehaviour {
 #endregion
 
 #region Custom Functions
+    IEnumerator Setup()
+    {
+        yield return new WaitForEndOfFrame();
+        myType = GlobalMembers.SelectRandomType();
+        sprites[1].sprite = GlobalBlockBehavior.publicGlobalBlockBehavior.GetSprite(myType);
+        yield return null;
+    }
     public void Fade(bool state)
     {
         Color currentTargetColor = state ? GlobalBlockBehavior.publicGlobalBlockBehavior.FadeColor : GlobalBlockBehavior.publicGlobalBlockBehavior.NormalColor;

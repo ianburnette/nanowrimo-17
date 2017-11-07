@@ -70,63 +70,61 @@ public class PlayerInput : MonoBehaviour {
         else if (captureTouchPos)
             GetTouchPos();
         if (captureMousePos || captureTouchPos)
+        {
+            UpdatePosition(captureMousePos ? InputType.mouse : InputType.touch);
             StillReceivingInput();
+        }
+            
+    }
+    private void OnDrawGizmos()
+    {
+      //  Gizmos.DrawSphere(InputPositionWorld, 1f);
     }
     #endregion
 
     #region Custom Functions
-    void ClickedWithMouse()                              //THE USER HAS CLICKED - FIGURE OUT WHERE IT WAS AND START TRACKING IT
+    void ClickedWithMouse()                                  //THE USER HAS CLICKED - FIGURE OUT WHERE IT WAS AND START TRACKING IT
     {
         GetMousePos();
         currentInputType = InputType.mouse;
         captureMousePos = true;
-        /*if (HitAtPosition(mousePosition))
-            captureMousePos = true;
-        else
-            captureMousePos = false;*/
         OnInputStarted();
     }
-    void TouchedWithFinger()                             //A TOUCH HAS BEGUN - FIGURE OUT WHERE IT IS AND START TRACKING IT
+    void TouchedWithFinger()                                 //A TOUCH HAS BEGUN - FIGURE OUT WHERE IT IS AND START TRACKING IT
     {
         GetTouchPos();
         captureTouchPos = true;
-        /*if (HitAtPosition(touchPosition))
-            captureTouchPos = true;
-        else
-            captureTouchPos = false;*/
         OnInputStarted();
     }
-    void GetMousePos()                                //GET THE LOCATION AT WHICH TO CAST A RAY FROM THE RECEIVED CLICK
+    void GetMousePos()                                       //GET THE LOCATION AT WHICH TO CAST A RAY FROM THE RECEIVED CLICK
     {
         Vector3 mousePos = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePos);
         inputPositionScreen = mousePosition;
-        //CurrentInput(mousePosition);
+        UpdatePosition(InputType.mouse);
     }
-    void GetTouchPos()                                //GET THE LOCATION AT WHICH TO CAST A RAY FROM THE RECEIVED TOUCH
+    void GetTouchPos()                                       //GET THE LOCATION AT WHICH TO CAST A RAY FROM THE RECEIVED TOUCH
     {
         Vector3 touchPos = Input.GetTouch(0).position;
         touchPosition = Camera.main.ScreenToWorldPoint(touchPos);
         inputPositionScreen = touchPosition;
-        //CurrentInput(touchPosition);
+        UpdatePosition(InputType.touch);
     }
-    public void UpdatePosition(InputType currentInputType)      //KEEP TRACK OF THE RAW LOCATION OF THE CURRENT INPUT, TRANSLATE TO WORLD SPACE, AND BROADCAST
+    public void UpdatePosition(InputType currentInputType)   //KEEP TRACK OF THE RAW LOCATION OF THE CURRENT INPUT, TRANSLATE TO WORLD SPACE, AND BROADCAST
     {
         if (currentInputType == InputType.mouse)
             inputPositionScreen = Input.mousePosition;
-        else
+        else if (currentInputType == InputType.touch)
             inputPositionScreen = Input.GetTouch(0).position;
         inputPositionWorld = Camera.main.ScreenToWorldPoint(inputPositionScreen);
-        //CurrentInput(inputPositionWorld);
     }
-    public bool StillReceivingInput()                             //THE PLAYER IS TOUCHING/HOLDING THE MOUSE DOWN - WAIT FOR THEM TO STOP
+    public bool StillReceivingInput()                        //THE PLAYER IS TOUCHING/HOLDING THE MOUSE DOWN - WAIT FOR THEM TO STOP
     {
         if (currentInputType == InputType.mouse)
             if (Input.GetMouseButtonUp(0))
             {
-                //ReleaseBlock();
                 captureMousePos = false;
-                currentInputType = InputType.none;
+                ZeroInputs();
                 return false;
             }
 
@@ -135,13 +133,21 @@ public class PlayerInput : MonoBehaviour {
             currentTouch = Input.GetTouch(0);
             if (currentTouch.phase == TouchPhase.Ended)
             {
-                currentInputType = InputType.none;
+              
+                ZeroInputs();
                 return false;
             }
-              //  ReleaseBlock();
             captureTouchPos = false;
         }
         return true;
     }
+    void ZeroInputs()
+    {
+        currentInputType = InputType.none;
+        inputPositionScreen = Vector2.zero;
+        inputPositionWorld = Vector2.zero;
+        mousePosition = Vector2.zero;
+        touchPosition = Vector2.zero;
+    }                                     //CLEAR OUT THESE VARIABLES AFTER INPUT HAS STOPPED
     #endregion
 }

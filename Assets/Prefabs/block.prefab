@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93938b53b2fade449ccab7bb941e395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myType: 1
+  myGridIndex: {x: 0, y: 0}
   sprites:
   - {fileID: 212727490787363590}
   - {fileID: 212645023142907052}

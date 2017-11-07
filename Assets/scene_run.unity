@@ -1154,6 +1154,8 @@ MonoBehaviour:
   rows: 8
   rowHeight: 0.85
   columnWidth: 0.85
+  firstColumnXPosition: 0
+  finalColumnXPosition: 0
 --- !u!114 &1039754175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1168,8 +1170,11 @@ MonoBehaviour:
   columnCount: 7
   rowCount: 150
   firstActiveRow: 7
-  currentBlockGO: {fileID: 0}
-  currentBlock: 0
+  blockMovement: {fileID: 2026587502}
+  gridQuery: {x: 0, y: 0}
+  queryBlockType: 0
+  queryGameObject: {fileID: 0}
+  queryLocalGridPosition: {x: 0, y: 0}
 --- !u!114 &1039754176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1183,8 +1188,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columnManagement: {fileID: 1039754175}
   blockPool: {fileID: 1039754177}
-  blocksToCreate: 16
-  minRowToGenerateIn: 4
+  blocksToCreate: 2
+  minRowToGenerateIn: 6
   likelihoodOfGeneratingBlock: 0.75
 --- !u!114 &1039754177
 MonoBehaviour:
@@ -1217,6 +1222,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeColor: {r: 1, g: 1, b: 1, a: 0.491}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
+  fireSprite: {fileID: 21300000, guid: b0b147a729378ae4ab5c94ae3b033d1a, type: 3}
+  iceSprite: {fileID: 21300000, guid: 56defa67addf1ed40b251ecb58572949, type: 3}
+  ghostSprite: {fileID: 21300000, guid: f291c0dc4a33ad84d87c32c43ea18bda, type: 3}
+  crateSprite: {fileID: 21300000, guid: 0022122b08e3f2f4d9473b7216f42420, type: 3}
+  spiritSprite: {fileID: 21300000, guid: 74fa34e18a3b07b41b8c68c87f1de08c, type: 3}
+  waterSprite: {fileID: 21300000, guid: 7e147ef634186964190dff40b4b699df, type: 3}
+  woodSprite: {fileID: 21300000, guid: 9e98408a66781794a8ad98d9f3a94a02, type: 3}
 --- !u!1 &1068115406
 GameObject:
   m_ObjectHideFlags: 0
@@ -1540,10 +1552,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInput: {fileID: 2026587503}
+  columnManagement: {fileID: 1039754175}
   currentlySelectedBlock: {fileID: 0}
   currentIndividualClass: {fileID: 0}
   captureTouchPos: 0
   captureMousePos: 0
+  columnChangeMargin: 0.6
   selectionBlockReference: {fileID: 511715338}
   offsetFromBlockCenter: {x: 0, y: 0}
   selectionReferenceSprite: {fileID: 511715339}

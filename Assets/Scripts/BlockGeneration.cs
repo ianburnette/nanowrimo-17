@@ -40,33 +40,33 @@ public class BlockGeneration : MonoBehaviour {
             if (timesThroughLoop > 100)
             {
                 blocksCreated = blocksToCreate;
-                print("timed out of loop");
+            //    print("timed out of loop");
             }
             //loop through available cells and create blocks in them as long as they're not empty
             for (int i = columnManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
             {
                 for (int j = 0; j < columnManagement.ColumnCount; j++)
                 {
-                    print("placing in column "+ j);
+                //    print("placing in column "+ j);
                     if (Random.value < likelihoodOfGeneratingBlock && columnManagement.CellEmpty(i, j))
                     {
-                        print("placing block at " + GridManagement.publicGrid.GridOrigin);
+                      //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
                         GameObject thisBlock = CreateBlock(
                             GridManagement.publicGrid.GridOrigin +
                                 new Vector2(
                                     (GridManagement.publicGrid.ColumnWidth * j) + GridManagement.publicGrid.ColumnWidth / 2,
                                     (GridManagement.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridManagement.publicGrid.RowHeight / 2
                                     )));
-                        columnManagement.CategorizeBlock(i, j, thisBlock);
+                        columnManagement.PlaceNewBlock(i, j, thisBlock.GetComponent<BlockIndividual>());
                         blocksCreated++;
                         if (blocksCreated >= blocksToCreate)
                             break;
-                        print("blocks created is now " + blocksCreated);
+                     //   print("blocks created is now " + blocksCreated);
                         yield return new WaitForEndOfFrame();
                     }
                     else
                     {
-                        print("but it's not empty");
+                //        print("but it's not empty");
                         yield return new WaitForEndOfFrame();
                     }
                     yield return new WaitForEndOfFrame();
