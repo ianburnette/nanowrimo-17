@@ -257,9 +257,9 @@
     <Compile Include="Assets\Easy Save 2\Types\ES2_AudioClip.cs" />
     <Compile Include="Assets\GlobalBlockBehavior.cs" />
     <Compile Include="Assets\PlayerInput.cs" />
+    <Compile Include="Assets\Scripts\BlockDragging.cs" />
     <Compile Include="Assets\Scripts\BlockGeneration.cs" />
     <Compile Include="Assets\Scripts\BlockIndividual.cs" />
-    <Compile Include="Assets\Scripts\BlockMovement.cs" />
     <Compile Include="Assets\Scripts\BlockRise.cs" />
     <Compile Include="Assets\Scripts\GlobalMembers.cs" />
     <Compile Include="Assets\Scripts\GridDebug.cs" />

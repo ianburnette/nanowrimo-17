@@ -51,6 +51,32 @@ public class PlayerInput : MonoBehaviour {
             inputPositionScreen = value;
         }
     }
+
+    public bool CaptureMousePos
+    {
+        get
+        {
+            return captureMousePos;
+        }
+
+        set
+        {
+            captureMousePos = value;
+        }
+    }
+
+    public bool CaptureTouchPos
+    {
+        get
+        {
+            return captureTouchPos;
+        }
+
+        set
+        {
+            captureTouchPos = value;
+        }
+    }
     #endregion
 
     #region Unity Functions

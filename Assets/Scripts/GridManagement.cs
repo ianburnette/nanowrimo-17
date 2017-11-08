@@ -8,12 +8,21 @@ public struct GridCoordinates
     public int row;
 }
 
+public enum BlockMovementDirection
+{
+    up, 
+    down, 
+    left, 
+    right,
+    none
+}
+
 public class GridManagement : MonoBehaviour {
     #region Private Variables
     [SerializeField] int columnCount, rowCount, firstActiveRow;
-    [SerializeField] BlockMovement blockMovement;
+    [SerializeField] BlockDragging blockMovement;
 
-    [SerializeField] Block[,] blockGrid;
+    [SerializeField] BlockIndividual[,] blockGrid;
 
     [SerializeField] GridCoordinates gridQuery;
     [SerializeField] BlockType queryBlockType;
@@ -49,7 +58,7 @@ public class GridManagement : MonoBehaviour {
     #endregion
 
     #region Unity Functions
-    void Start () {
+    void Awake () {
         InitializeBlockArray();
     }
     private void Update()
@@ -62,6 +71,14 @@ public class GridManagement : MonoBehaviour {
     #region Custom Functions
     void QueryCell()                            //a debug function to see what is in a particular cell
     {
+        BlockIndividual query = blockGrid[gridQuery.column, gridQuery.row];
+        if (query != null)
+        {
+            queryBlockType = query.MyType;
+            queryGameObject = query.gameObject;
+            queryLocalGridPosition = query.MyGridCoords;
+        }
+        
       /*  int x = Mathf.RoundToInt(gridQuery.x);
         int y = Mathf.RoundToInt(gridQuery.y);
         queryBlockType = blockGrid[x, y].type;
@@ -73,11 +90,11 @@ public class GridManagement : MonoBehaviour {
     }
     void InitializeBlockArray()                                                     //SETS UP THE ARRAY TO BE THE CORRECT SIZE
     {
-        blockGrid = new Block[columnCount, rowCount];
+        blockGrid = new BlockIndividual[columnCount, rowCount];
     }
     public bool CellEmpty(GridCoordinates gridCoords)                               //RETURNS TRUE IF CELL AT THESE COORDINATES IS EMPTY
     {
-        if (blockGrid[gridCoords.column, gridCoords.row].type == BlockType.none)
+        if (blockGrid[gridCoords.column, gridCoords.row] == null)
             return true;
         else
             return false;
@@ -85,13 +102,15 @@ public class GridManagement : MonoBehaviour {
     public void PlaceNewBlock(GridCoordinates gridCoords, BlockIndividual blockScript)
     { 
         blockScript.MyGridCoords = gridCoords;
-        blockGrid[gridCoords.column, gridCoords.row].myGameObject = blockScript.gameObject;
-        blockGrid[gridCoords.column, gridCoords.row].type = blockScript.MyType;
+        blockGrid[gridCoords.column, gridCoords.row] = blockScript;
+        //.myGameObject = blockScript.gameObject;
+        //blockGrid[gridCoords.column, gridCoords.row].type = blockScript.MyType;
     }
-    public void PlaceEmptySpace(int row, int column)
+    public void PlaceEmptySpace(GridCoordinates gridCoords)
     {
-        blockGrid[column, row].myGameObject = null;
-        blockGrid[column, row].type = BlockType.none;
+        blockGrid[gridCoords.column, gridCoords.row] = null;
+        //blockGrid[column, row].myGameObject = null;
+        //blockGrid[column, row].type = BlockType.none;
     }
     //
     /*
@@ -104,14 +123,49 @@ public class GridManagement : MonoBehaviour {
      * *.
     /*
      */
-     public void SwapBlocks(BlockIndividual incomingBlock, BlockIndividual outgoingBlock)
+     public void SwapBlocks(BlockIndividual incomingBlock, BlockMovementDirection incomingDirection)
      {
+        //the primary location is the place where we're placing the block. the secondary location is that block's old position and the displaced blocks new position  
+        
+        GridCoordinates primaryLocation = GetRelativeCoordinates(incomingBlock.MyGridCoords, incomingDirection);
+        GridCoordinates secondaryLocation = incomingBlock.MyGridCoords;
+        print(secondaryLocation.column + " " + secondaryLocation.row);
+        if (CellEmpty(primaryLocation))
+        {
+            incomingBlock.MyGridCoords = primaryLocation;
+            blockGrid[primaryLocation.column, primaryLocation.row] = incomingBlock;
+            blockGrid[secondaryLocation.column, secondaryLocation.row] = null;
+        }
+            
+        else
+        {
+            BlockIndividual outgoingBlock = blockGrid[primaryLocation.column, primaryLocation.row];
+            BlockIndividual outgoing = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
+            BlockIndividual incoming = blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row];
+            blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row] = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
+        }
         //update the grid to match the new blocks' positions and then send the call to physically move them
-        Block outgoing = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
-        Block incoming = blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row];
-        blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row] = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
+        
         //blockGrid[outgoingBlock.MyGridCoords.column]
      }
+    GridCoordinates GetRelativeCoordinates(GridCoordinates coords, BlockMovementDirection directionToQuery)
+    {
+        GridCoordinates coordsToReture = coords;
+        print(coords.column + " " + coords.row);
+        switch (directionToQuery)
+        {
+            case BlockMovementDirection.down:
+                //this should only ever be empty, right? 
+                break;
+            case BlockMovementDirection.left:
+                coords.column = coords.column - 1;
+                return coords;
+            case BlockMovementDirection.right:
+                coords.column = coords.column + 1;
+                return coords;
+        }
+        return coords;
+    }
         /*
     public void CategorizeBlock(int row, int column, BlockIndividual blockScript)                                 //UPDATE THE GRID VARIABLES AT THIS LOCATION WITH THE VARIABLES OF TH ENEW BLOCK
     {

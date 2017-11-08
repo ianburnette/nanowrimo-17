@@ -35,20 +35,19 @@ public class BlockGeneration : MonoBehaviour {
         yield return new WaitForEndOfFrame();
         int blocksCreated = 0;
         int timesThroughLoop = 0;
+        GridCoordinates currentCoords;
         while (blocksCreated < blocksToCreate)
         {
             if (timesThroughLoop > 100)
-            {
                 blocksCreated = blocksToCreate;
-            //    print("timed out of loop");
-            }
             //loop through available cells and create blocks in them as long as they're not empty
             for (int i = columnManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
             {
+                currentCoords.row = i;
                 for (int j = 0; j < columnManagement.ColumnCount; j++)
                 {
-                //    print("placing in column "+ j);
-                    if (Random.value < likelihoodOfGeneratingBlock && columnManagement.CellEmpty(i, j))
+                    currentCoords.column = j;
+                    if (Random.value < likelihoodOfGeneratingBlock && columnManagement.CellEmpty(currentCoords  ))
                     {
                       //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
                         GameObject thisBlock = CreateBlock(
@@ -57,18 +56,14 @@ public class BlockGeneration : MonoBehaviour {
                                     (GridDebug.publicGrid.ColumnWidth * j) + GridDebug.publicGrid.ColumnWidth / 2,
                                     (GridDebug.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridDebug.publicGrid.RowHeight / 2
                                     )));
-                        columnManagement.PlaceNewBlock(i, j, thisBlock.GetComponent<BlockIndividual>());
+                        columnManagement.PlaceNewBlock(currentCoords, thisBlock.GetComponent<BlockIndividual>());
                         blocksCreated++;
                         if (blocksCreated >= blocksToCreate)
                             break;
-                     //   print("blocks created is now " + blocksCreated);
                         yield return new WaitForEndOfFrame();
                     }
                     else
-                    {
-                //        print("but it's not empty");
                         yield return new WaitForEndOfFrame();
-                    }
                     yield return new WaitForEndOfFrame();
                 }
                 yield return new WaitForEndOfFrame();

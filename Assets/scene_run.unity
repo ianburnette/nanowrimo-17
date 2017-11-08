@@ -134,7 +134,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 97365513}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0787711, y: -2.6203349, z: 0.1524374}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2012263560}
@@ -1134,7 +1134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a3767106374e434c960c6523003c2f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  raiseSpeed: 2
+  raiseSpeed: 0
 --- !u!114 &1039754174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1149,7 +1149,7 @@ MonoBehaviour:
   showGridCenterLines: 0
   showGridOutlines: 1
   showGridOrigin: 1
-  gridOrigin: {x: -4.06, y: -7.1}
+  gridOrigin: {x: -2.98, y: -4.47}
   columns: 7
   rows: 8
   rowHeight: 0.85
@@ -1169,12 +1169,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columnCount: 7
   rowCount: 150
-  firstActiveRow: 7
+  firstActiveRow: 6
   blockMovement: {fileID: 2026587502}
-  gridQuery: {x: 0, y: 0}
+  gridQuery:
+    column: 0
+    row: 0
   queryBlockType: 0
   queryGameObject: {fileID: 0}
-  queryLocalGridPosition: {x: 0, y: 0}
+  queryLocalGridPosition:
+    column: 0
+    row: 0
 --- !u!114 &1039754176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1188,9 +1192,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columnManagement: {fileID: 1039754175}
   blockPool: {fileID: 1039754177}
-  blocksToCreate: 2
-  minRowToGenerateIn: 6
-  likelihoodOfGeneratingBlock: 0.75
+  blocksToCreate: 1
+  minRowToGenerateIn: 5
+  likelihoodOfGeneratingBlock: 0.5
 --- !u!114 &1039754177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1203,7 +1207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Template: {fileID: 1048211023407686, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
-  PoolName: BlocksPool
+  PoolName: blocks
   ObjectList: []
   AutoResize: 0
   PoolSize: 100
@@ -1220,13 +1224,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6fa019ecc56b594d9c5129367770ef2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeColor: {r: 1, g: 1, b: 1, a: 0.491}
+  fadeColor: {r: 1, g: 1, b: 1, a: 0.49803922}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   fireSprite: {fileID: 21300000, guid: b0b147a729378ae4ab5c94ae3b033d1a, type: 3}
   iceSprite: {fileID: 21300000, guid: 56defa67addf1ed40b251ecb58572949, type: 3}
   ghostSprite: {fileID: 21300000, guid: f291c0dc4a33ad84d87c32c43ea18bda, type: 3}
   crateSprite: {fileID: 21300000, guid: 0022122b08e3f2f4d9473b7216f42420, type: 3}
-  spiritSprite: {fileID: 21300000, guid: 74fa34e18a3b07b41b8c68c87f1de08c, type: 3}
+  spiritSprite: {fileID: 21300000, guid: 1ffd26a09d82dc3468b4bbcb69138bc0, type: 3}
   waterSprite: {fileID: 21300000, guid: 7e147ef634186964190dff40b4b699df, type: 3}
   woodSprite: {fileID: 21300000, guid: 9e98408a66781794a8ad98d9f3a94a02, type: 3}
 --- !u!1 &1068115406
@@ -1462,7 +1466,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1683886082}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 1.1, y: 2.73, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 659112413}
@@ -1552,11 +1556,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInput: {fileID: 2026587503}
-  columnManagement: {fileID: 1039754175}
+  gridManagement: {fileID: 1039754175}
   currentlySelectedBlock: {fileID: 0}
   currentIndividualClass: {fileID: 0}
-  captureTouchPos: 0
-  captureMousePos: 0
   columnChangeMargin: 0.6
   selectionBlockReference: {fileID: 511715338}
   offsetFromBlockCenter: {x: 0, y: 0}
