@@ -96,15 +96,15 @@ public class BlockDragging : MonoBehaviour
         float differenceInPosition = positionToSet.x - curBlockPos.x;
         if (Mathf.Abs(differenceInPosition) > columnChangeMargin)
         {
-            if (positionToSet.x > curBlockPos.x && positionToSet.x < GridDebug.publicGrid.FinalColumnXPosition) //we're moving to the right
+            if (positionToSet.x > curBlockPos.x && positionToSet.x < GridLayout.publicGrid.FinalColumnXPosition) //we're moving to the right
             {
-                positionToSet.x = curBlockPos.x + GridDebug.publicGrid.ColumnWidth;
+                positionToSet.x = curBlockPos.x + GridLayout.publicGrid.ColumnWidth;
                 directionToMove = BlockMovementDirection.right;
             }
-            else if (positionToSet.x < curBlockPos.x && positionToSet.x > GridDebug.publicGrid.FirstColumnXPosition)
+            else if (positionToSet.x < curBlockPos.x && positionToSet.x > GridLayout.publicGrid.FirstColumnXPosition)
             {     //we're moving to the left
                   //     print("minimum is " + GridManagement.publicGrid.FirstColumnXPosition + " and this blocks x position is " + positionToSet.x);
-                positionToSet.x = curBlockPos.x - GridDebug.publicGrid.ColumnWidth;
+                positionToSet.x = curBlockPos.x - GridLayout.publicGrid.ColumnWidth;
                 directionToMove = BlockMovementDirection.left;
             }
         }

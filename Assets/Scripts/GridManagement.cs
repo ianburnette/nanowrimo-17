@@ -21,6 +21,7 @@ public class GridManagement : MonoBehaviour {
     #region Private Variables
     [SerializeField] int columnCount, rowCount, firstActiveRow;
     [SerializeField] BlockDragging blockMovement;
+    [SerializeField] GridLayout gridLayout;
 
     [SerializeField] BlockIndividual[,] blockGrid;
 
@@ -130,6 +131,18 @@ public class GridManagement : MonoBehaviour {
         GridCoordinates primaryLocation = GetRelativeCoordinates(incomingBlock.MyGridCoords, incomingDirection);
         GridCoordinates secondaryLocation = incomingBlock.MyGridCoords;
         print(secondaryLocation.column + " " + secondaryLocation.row);
+
+        if (CellEmpty(primaryLocation)) //move the block to this empty cell
+        {
+            MoveBlock(incomingBlock.transform, GetRelativePosition(secondaryLocation, incomingDirection));
+        }
+        else
+        {
+            Vector2 tempPos = incomingBlock.transform.position;
+            MoveBlock(incomingBlock.transform, GetRelativePosition(secondaryLocation, incomingDirection));
+            MoveBlock(blockGrid[primaryLocation.column, primaryLocation.row].transform, tempPos);
+        }
+
         if (CellEmpty(primaryLocation))
         {
             incomingBlock.MyGridCoords = primaryLocation;
@@ -144,10 +157,18 @@ public class GridManagement : MonoBehaviour {
             BlockIndividual incoming = blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row];
             blockGrid[incomingBlock.MyGridCoords.column, incomingBlock.MyGridCoords.row] = blockGrid[outgoingBlock.MyGridCoords.column, outgoingBlock.MyGridCoords.row];
         }
-        //update the grid to match the new blocks' positions and then send the call to physically move them
+        //update the grid to match the new blocks' positions and 
+
+
+
+        //then send the call to physically move them
         
         //blockGrid[outgoingBlock.MyGridCoords.column]
      }
+    void MoveBlock(Transform blockToMove, Vector2 destinationToMoveTo)
+    {
+        blockToMove.position = destinationToMoveTo;
+    }
     GridCoordinates GetRelativeCoordinates(GridCoordinates coords, BlockMovementDirection directionToQuery)
     {
         GridCoordinates coordsToReture = coords;
@@ -165,6 +186,21 @@ public class GridManagement : MonoBehaviour {
                 return coords;
         }
         return coords;
+    }
+    Vector2 GetRelativePosition(GridCoordinates coords, BlockMovementDirection movementDirection)
+    {
+        Vector2 relativePos = new Vector2(
+                gridLayout.GridTopLeft.x + (coords.column   * gridLayout.ColumnWidth) + (gridLayout.ColumnWidth / 2),
+                gridLayout.GridTopLeft.y - ((coords.row +1) * gridLayout.RowHeight)   - (gridLayout.RowHeight   / 2)
+            );
+        return relativePos;
+    }
+    public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
+    {
+        Vector2 pos = new Vector2(
+            gridLayout.FirstColumnXPosition + (coords.column * gridLayout.ColumnWidth),
+            gridLayout.FirstRowYPosition - (coords.row * gridLayout.RowHeight        ));
+        return pos;
     }
         /*
     public void CategorizeBlock(int row, int column, BlockIndividual blockScript)                                 //UPDATE THE GRID VARIABLES AT THIS LOCATION WITH THE VARIABLES OF TH ENEW BLOCK

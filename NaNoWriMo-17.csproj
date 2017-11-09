@@ -262,7 +262,7 @@
     <Compile Include="Assets\Scripts\BlockIndividual.cs" />
     <Compile Include="Assets\Scripts\BlockRise.cs" />
     <Compile Include="Assets\Scripts\GlobalMembers.cs" />
-    <Compile Include="Assets\Scripts\GridDebug.cs" />
+    <Compile Include="Assets\Scripts\GridLayout.cs" />
     <Compile Include="Assets\Scripts\GridManagement.cs" />
   </ItemGroup>
   <ItemGroup>

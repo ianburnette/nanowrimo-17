@@ -6,7 +6,7 @@ using UnityEngine;
 public class BlockGeneration : MonoBehaviour {
 
     #region Private Variables
-    [SerializeField] GridManagement columnManagement;
+    [SerializeField] GridManagement gridManagement;
     [SerializeField] EZObjectPools.EZObjectPool blockPool;
 
     [Header("Beginning of Run")]
@@ -41,22 +41,17 @@ public class BlockGeneration : MonoBehaviour {
             if (timesThroughLoop > 100)
                 blocksCreated = blocksToCreate;
             //loop through available cells and create blocks in them as long as they're not empty
-            for (int i = columnManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
+            for (int i = gridManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
             {
                 currentCoords.row = i;
-                for (int j = 0; j < columnManagement.ColumnCount; j++)
+                for (int j = 0; j < gridManagement.ColumnCount; j++)
                 {
                     currentCoords.column = j;
-                    if (Random.value < likelihoodOfGeneratingBlock && columnManagement.CellEmpty(currentCoords  ))
+                    if (Random.value < likelihoodOfGeneratingBlock && gridManagement.CellEmpty(currentCoords))
                     {
                       //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
-                        GameObject thisBlock = CreateBlock(
-                            GridDebug.publicGrid.GridOrigin +
-                                new Vector2(
-                                    (GridDebug.publicGrid.ColumnWidth * j) + GridDebug.publicGrid.ColumnWidth / 2,
-                                    (GridDebug.publicGrid.RowHeight * (columnManagement.FirstActiveRow - i) + GridDebug.publicGrid.RowHeight / 2
-                                    )));
-                        columnManagement.PlaceNewBlock(currentCoords, thisBlock.GetComponent<BlockIndividual>());
+                        GameObject thisBlock = CreateBlock(gridManagement.GetPositionAtCoordinates(currentCoords));
+                        gridManagement.PlaceNewBlock(currentCoords, thisBlock.GetComponent<BlockIndividual>());
                         blocksCreated++;
                         if (blocksCreated >= blocksToCreate)
                             break;
