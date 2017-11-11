@@ -32,7 +32,7 @@ public class BlockGeneration : MonoBehaviour {
 #region Custom Functions
     IEnumerator GenerateBeginningOfRunBlocks()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(1f);
         int blocksCreated = 0;
         int timesThroughLoop = 0;
         GridCoordinates currentCoords;
@@ -40,35 +40,50 @@ public class BlockGeneration : MonoBehaviour {
         {
             if (timesThroughLoop > 100)
                 blocksCreated = blocksToCreate;
-            //loop through available cells and create blocks in them as long as they're not empty
-            for (int i = gridManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
+        
+            for (int j = gridManagement.CurrentBottonRow; j > gridManagement.RowsFromTopOfGrid; j--) //for every row, starting at the current bottom of the screen and moving up until we reach the inactive rows for this round
             {
-                currentCoords.row = i;
-                for (int j = 0; j < gridManagement.ColumnCount; j++)
+                for (int i = 0; i < gridManagement.ColumnCount; i++) //for every column
                 {
-                    currentCoords.column = j;
-                    if (Random.value < likelihoodOfGeneratingBlock && gridManagement.CellEmpty(currentCoords))
-                    {
-                      //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
-                        GameObject thisBlock = CreateBlock(gridManagement.GetPositionAtCoordinates(currentCoords));
-                        gridManagement.PlaceNewBlock(currentCoords, thisBlock.GetComponent<BlockIndividual>());
-                        blocksCreated++;
-                        if (blocksCreated >= blocksToCreate)
-                            break;
-                        yield return new WaitForEndOfFrame();
-                    }
-                    else
-                        yield return new WaitForEndOfFrame();
+                    currentCoords.column = i;
+                    currentCoords.row = j;
+                    GameObject thisBlock = CreateBlock(gridManagement.GetPositionAtCoordinates(currentCoords));
+                    blocksCreated++;
                     yield return new WaitForEndOfFrame();
                 }
-                yield return new WaitForEndOfFrame();
             }
             yield return new WaitForEndOfFrame();
             timesThroughLoop++;
         }
         yield return null;
     }
-   
+
+
+    //loop through available cells and create blocks in them as long as they're not empty
+    /* for (int i = gridManagement.FirstActiveRow; i > minRowToGenerateIn; i--)          //FOR EVERY ROW, STARTING AT THE BOTTOM AND ENDING AT THE STATED MINIMUM
+     {
+         currentCoords.row = i;
+         for (int j = 0; j < gridManagement.ColumnCount; j++)
+         {
+             currentCoords.column = j;
+             if (Random.value < likelihoodOfGeneratingBlock && gridManagement.CellEmpty(currentCoords))
+             {
+               //  print("placing block at " + GridManagement.publicGrid.GridOrigin);
+                 GameObject thisBlock = CreateBlock(gridManagement.GetPositionAtCoordinates(currentCoords));
+                 gridManagement.PlaceNewBlock(currentCoords, thisBlock.GetComponent<BlockIndividual>());
+                 blocksCreated++;
+                 if (blocksCreated >= blocksToCreate)
+                     break;
+                 yield return new WaitForEndOfFrame();
+             }
+             else
+                 yield return new WaitForEndOfFrame();
+             yield return new WaitForEndOfFrame();
+         }
+         yield return new WaitForEndOfFrame();
+     }*/
+
+
     GameObject CreateBlock(Vector2 position)
     {
         GameObject createdBlock;

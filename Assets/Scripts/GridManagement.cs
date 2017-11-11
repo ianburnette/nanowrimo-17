@@ -17,15 +17,36 @@ public enum BlockMovementDirection
     none
 }
 
+public class BlockCell
+{
+    public Vector2 cellPosition;
+    public GridCoordinates myCoordinates;
+    public BlockIndividual blockInCell;
+}
+
 public class GridManagement : MonoBehaviour {
     #region Private Variables
-    [SerializeField] int columnCount, rowCount, firstActiveRow;
+    [Header("Game Board variables")]
+    public static GridManagement publicGrid;                        
+    [SerializeField] int columnCount, rowCount;
+    [SerializeField] BlockCell[,] blockGrid;
+    [SerializeField] float rowHeight, columnWidth;
+
+    [Header ("References")]
     [SerializeField] BlockDragging blockMovement;
-    [SerializeField] GridLayout gridLayout;
 
-    [SerializeField] BlockIndividual[,] blockGrid;
+    [Header("Level-specific variables")]
+    [SerializeField] int rowsFromTopOfGrid;
+    [SerializeField] int currentBottonRow;
 
-    [SerializeField] GridCoordinates gridQuery;
+    [Header("Debug Variables")]
+    [SerializeField] bool showGridCenterLines;
+    [SerializeField] bool showGridOutlines;
+    [SerializeField] bool showGridOrigin;
+    [SerializeField] bool showCells;
+    [SerializeField] bool gridInitialized;
+
+    [SerializeField] GridCoordinates debugGridQuery;
     [SerializeField] BlockType queryBlockType;
     [SerializeField] GameObject queryGameObject;
     [SerializeField] GridCoordinates queryLocalGridPosition;
@@ -44,52 +65,182 @@ public class GridManagement : MonoBehaviour {
             columnCount = value;
         }
     }
-    public int FirstActiveRow
+
+    public int RowCount
     {
         get
         {
-            return firstActiveRow;
+            return rowCount;
         }
 
         set
         {
-            firstActiveRow = value;
+            rowCount = value;
+        }
+    }
+
+    public int CurrentBottonRow
+    {
+        get
+        {
+            return currentBottonRow;
+        }
+
+        set
+        {
+            currentBottonRow = value;
+        }
+    }
+
+    public int RowsFromTopOfGrid
+    {
+        get
+        {
+            return rowsFromTopOfGrid;
+        }
+
+        set
+        {
+            rowsFromTopOfGrid = value;
         }
     }
     #endregion
 
     #region Unity Functions
-    void Awake () {
-        InitializeBlockArray();
+    void OnEnable () {
+        publicGrid = this;
+        if (!gridInitialized)
+            InitializeGrid();
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Y))
             QueryCell();
     }
+    private void OnDrawGizmos()
+    {
+        if (showCells && gridInitialized)
+        {
+            Gizmos.color = Color.red;
+            for (int i = 0; i < columnCount; i++) //for every column
+                for (int j = 0; j < rowsFromTopOfGrid; j++) //and every inaccessible row at the top
+                    Gizmos.DrawCube(blockGrid[i, j].cellPosition, new Vector3(.1f, .1f, .1f));
+            Gizmos.color = Color.green;
+            for (int i = 0; i < columnCount; i++) //for every column
+                for (int j = rowsFromTopOfGrid; j < rowCount; j++) //and every accessible row within every column
+                    Gizmos.DrawCube(blockGrid[i, j].cellPosition, new Vector3(.1f, .1f, .1f));
+        }
+    }
     #endregion
 
     #region Custom Functions
-    void QueryCell()                            //a debug function to see what is in a particular cell
+    #region Grid Setup
+    void InitializeGrid()
     {
-        BlockIndividual query = blockGrid[gridQuery.column, gridQuery.row];
-        if (query != null)
+        blockGrid = new BlockCell[columnCount, rowCount];
+        for (int i = 0; i<columnCount; i++) //for every column
         {
-            queryBlockType = query.MyType;
-            queryGameObject = query.gameObject;
-            queryLocalGridPosition = query.MyGridCoords;
+            for (int j = 0; j < rowCount; j++) //and every row within every column
+            {
+                blockGrid[i, j] = new BlockCell();
+                blockGrid[i, j].cellPosition = (Vector2)transform.position +
+                                                new Vector2(columnWidth * i, rowHeight * j);
+            }
         }
-        
-      /*  int x = Mathf.RoundToInt(gridQuery.x);
-        int y = Mathf.RoundToInt(gridQuery.y);
-        queryBlockType = blockGrid[x, y].type;
-        queryGameObject = blockGrid[x, y].myGameObject;
-        if (queryGameObject != null)
-            queryLocalGridPosition = blockGrid[x, y].myGameObject.GetComponent<BlockIndividual>().MyGridIndex;
-        else
-            queryLocalGridPosition = Vector2.zero;*/
+        gridInitialized = true;
     }
-    void InitializeBlockArray()                                                     //SETS UP THE ARRAY TO BE THE CORRECT SIZE
+    void QueryCell()
+    {
+        if (blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell != null)
+        {
+            queryBlockType = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyType;
+            queryGameObject = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.gameObject;
+            queryLocalGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyGridCoords;
+        }
+    }
+    #endregion
+    #region Block Placement
+    public void SpawnBlock(BlockIndividual thisBlock, GridCoordinates gridCoords)
+    {
+        thisBlock.transform.position = blockGrid[gridCoords.column, gridCoords.row].cellPosition;
+        blockGrid[gridCoords.column, gridCoords.row].blockInCell = thisBlock;
+        blockGrid[gridCoords.column, gridCoords.row].myCoordinates = thisBlock.MyGridCoords = gridCoords;
+    }
+    public void SwapBlock(BlockIndividual thisBlock, BlockMovementDirection directionToMove)
+    {
+        BlockCell targetCell = GridQuery(thisBlock.MyGridCoords, directionToMove);
+        GridCoordinates previousCoords = thisBlock.MyGridCoords;
+        if (targetCell.blockInCell != null)
+        {
+            //store the target cell's values in temporary variables
+            Vector2 previousPos = thisBlock.transform.position;
+            BlockIndividual previousBlock = targetCell.blockInCell;
+            //physically move the blocks
+            thisBlock.transform.position = targetCell.cellPosition;
+            targetCell.blockInCell.transform.position = previousPos;
+            //update the moving cell's values
+            blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].blockInCell = thisBlock;
+            blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].myCoordinates = thisBlock.MyGridCoords = targetCell.myCoordinates; ;
+            //update the displaced cell's values
+            blockGrid[previousCoords.column, previousCoords.row].blockInCell = previousBlock;
+            blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousBlock.MyGridCoords = previousCoords;
+        }
+        else
+        { 
+            //physically move the moving block
+            thisBlock.transform.position = targetCell.cellPosition;
+            //update the new cell's values
+            blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].blockInCell = thisBlock;
+            blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].myCoordinates = thisBlock.MyGridCoords = targetCell.myCoordinates; ;
+            //update the old, empty cell's values
+            blockGrid[previousCoords.column, previousCoords.row].blockInCell = null;
+            blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousCoords;
+        }
+
+    }
+
+    #endregion
+    #region Utility Functions
+    BlockCell GridQuery(GridCoordinates gridCoords, BlockMovementDirection movementDirection)
+    {
+        switch (movementDirection)
+        {
+            case BlockMovementDirection.down:
+                return blockGrid[gridCoords.column, gridCoords.row + 1];
+            case BlockMovementDirection.left:
+                return blockGrid[gridCoords.column - 1, gridCoords.row];
+            case BlockMovementDirection.right:
+                return blockGrid[gridCoords.column + 1, gridCoords.row];
+        }
+        Debug.LogError("didn't find a direction to query so returning this block");
+        return blockGrid[gridCoords.column, gridCoords.row];
+    }
+    public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
+    {
+        return blockGrid[coords.column, coords.row].cellPosition;
+    }
+    #endregion
+    /*
+void QueryCell()                            //a debug function to see what is in a particular cell
+{
+  BlockIndividual query = blockGrid[gridQuery.column, gridQuery.row];
+  if (query != null)
+  {
+      queryBlockType = query.MyType;
+      queryGameObject = query.gameObject;
+      queryLocalGridPosition = query.MyGridCoords;
+  }
+
+/*  int x = Mathf.RoundToInt(gridQuery.x);
+  int y = Mathf.RoundToInt(gridQuery.y);
+  queryBlockType = blockGrid[x, y].type;
+  queryGameObject = blockGrid[x, y].myGameObject;
+  if (queryGameObject != null)
+      queryLocalGridPosition = blockGrid[x, y].myGameObject.GetComponent<BlockIndividual>().MyGridIndex;
+  else
+      queryLocalGridPosition = Vector2.zero;*/
+    /*}
+void InitializeGrid()                                              
     {
         blockGrid = new BlockIndividual[columnCount, rowCount];
     }
@@ -124,6 +275,7 @@ public class GridManagement : MonoBehaviour {
      * *.
     /*
      */
+    /*
      public void SwapBlocks(BlockIndividual incomingBlock, BlockMovementDirection incomingDirection)
      {
         //the primary location is the place where we're placing the block. the secondary location is that block's old position and the displaced blocks new position  
@@ -197,12 +349,10 @@ public class GridManagement : MonoBehaviour {
     }
     public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
     {
-        Vector2 pos = new Vector2(
-            gridLayout.FirstColumnXPosition + (coords.column * gridLayout.ColumnWidth),
-            gridLayout.FirstRowYPosition - (coords.row * gridLayout.RowHeight        ));
+        Vector2 pos = new Vector2(gridLayout.ColumnPositions[coords.column], gridLayout.RowPositions[coords.row]);
         return pos;
     }
-        /*
+  
     public void CategorizeBlock(int row, int column, BlockIndividual blockScript)                                 //UPDATE THE GRID VARIABLES AT THIS LOCATION WITH THE VARIABLES OF TH ENEW BLOCK
     {
         print("attempting to categorize block in column " + column + " and row " + row);
@@ -217,5 +367,5 @@ public class GridManagement : MonoBehaviour {
             PlaceNewBlock(row, column, blockScript);                                                              //THEN WE OFFICIALLY CATEGORIZE THE NEW BLOCK
     }
     */
-#endregion
+    #endregion
 }

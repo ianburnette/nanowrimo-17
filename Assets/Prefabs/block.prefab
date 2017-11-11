@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4504131211412764}
   - component: {fileID: 212727490787363590}
   - component: {fileID: 50816924486703426}
-  - component: {fileID: 61151022447377396}
   - component: {fileID: 114912779457476390}
+  - component: {fileID: 61050615427941386}
   m_Layer: 8
   m_Name: block
   m_TagString: Untagged
@@ -53,8 +53,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1048211023407686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.557, y: -4.054, z: -0.1524374}
-  m_LocalScale: {x: 1.3499999, y: 1.3500001, z: 1.1700001}
+  m_LocalPosition: {x: -0.00001168251, y: -10, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4828476319136030}
   m_Father: {fileID: 0}
@@ -68,7 +68,7 @@ Transform:
   m_GameObject: {fileID: 1226476701240654}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.7, y: 1.6999999, z: 1.6999999}
   m_Children: []
   m_Father: {fileID: 4504131211412764}
   m_RootOrder: 0
@@ -93,7 +93,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 5
---- !u!61 &61151022447377396
+--- !u!61 &61050615427941386
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -109,14 +109,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.6272727, y: 0.6272727}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 0.6272727, y: 0.6272727}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6272727, y: 0.6272727}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &114912779457476390
 MonoBehaviour:
@@ -130,7 +130,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myType: 1
-  myGridIndex: {x: 0, y: 0}
+  myGridCoords:
+    column: 0
+    row: 0
   sprites:
   - {fileID: 212727490787363590}
   - {fileID: 212645023142907052}
@@ -212,7 +214,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 799fc5a1e22a0f542a22920ffacbd999, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 09ede0c18a660f247973a96ae64402c1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -96,7 +96,7 @@ public class BlockDragging : MonoBehaviour
         float differenceInPosition = positionToSet.x - curBlockPos.x;
         if (Mathf.Abs(differenceInPosition) > columnChangeMargin)
         {
-            if (positionToSet.x > curBlockPos.x && positionToSet.x < GridLayout.publicGrid.FinalColumnXPosition) //we're moving to the right
+          /*  if (positionToSet.x > curBlockPos.x && positionToSet.x < GridLayout.publicGrid.FinalColumnXPosition) //we're moving to the right
             {
                 positionToSet.x = curBlockPos.x + GridLayout.publicGrid.ColumnWidth;
                 directionToMove = BlockMovementDirection.right;
@@ -106,7 +106,7 @@ public class BlockDragging : MonoBehaviour
                   //     print("minimum is " + GridManagement.publicGrid.FirstColumnXPosition + " and this blocks x position is " + positionToSet.x);
                 positionToSet.x = curBlockPos.x - GridLayout.publicGrid.ColumnWidth;
                 directionToMove = BlockMovementDirection.left;
-            }
+            }*/
         }
         else
         {
@@ -118,7 +118,7 @@ public class BlockDragging : MonoBehaviour
         {
             //the block is placed partially in the cell at this point - it displaces other blocks but doesn't yet match with others
             BlockIndividual currentBlockScript = currentlySelectedBlock.GetComponent<BlockIndividual>();
-            gridManagement.SwapBlocks(currentBlockScript, directionToMove);
+            //gridManagement.SwapBlocks(currentBlockScript, directionToMove);
 
             //int newBlockColumn = positionToSet.x > curBlockPos.x ? (int)currentBlockScript.MyGridIndex.x + 1 : (int)currentBlockScript.MyGridIndex.x - 1;
             //columnManagement.CategorizeBlock((int)currentBlockScript.MyGridIndex.y, newBlockColumn, currentlySelectedBlock.GetComponent<BlockIndividual>());
