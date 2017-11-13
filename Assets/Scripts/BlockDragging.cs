@@ -10,6 +10,7 @@ public class BlockDragging : MonoBehaviour
     [Header("References")]
     [SerializeField] PlayerInput playerInput;
     [SerializeField] GridManagement gridManagement;
+    [SerializeField] Matching matching;
 
     [Header("Dynamic Variables")]
     [SerializeField] GameObject currentlySelectedBlock;
@@ -61,7 +62,6 @@ public class BlockDragging : MonoBehaviour
     #region Input Functions
     void InputStart()
     {
-
         HitAtPosition(playerInput.InputPositionWorld);
     }
     void InputEnd()
@@ -90,59 +90,24 @@ public class BlockDragging : MonoBehaviour
     }
     void EvaluateBlockMovement()                           //THE PLAYER IS DRAGGING THE BLOCK - HANDLE IT'S SNAPPING TO COLUMNS AND DISPLACING OTHER BLOCKS
     {
-        Vector2 positionToSet = new Vector2(playerInput.InputPositionWorld.x, currentlySelectedBlock.transform.position.y);
-        Vector2 curBlockPos = currentlySelectedBlock.transform.position;
-        BlockMovementDirection directionToMove = BlockMovementDirection.none;
-        float differenceInPosition = positionToSet.x - curBlockPos.x;
-        if (Mathf.Abs(differenceInPosition) > columnChangeMargin)
-        {
-          /*  if (positionToSet.x > curBlockPos.x && positionToSet.x < GridLayout.publicGrid.FinalColumnXPosition) //we're moving to the right
-            {
-                positionToSet.x = curBlockPos.x + GridLayout.publicGrid.ColumnWidth;
-                directionToMove = BlockMovementDirection.right;
-            }
-            else if (positionToSet.x < curBlockPos.x && positionToSet.x > GridLayout.publicGrid.FirstColumnXPosition)
-            {     //we're moving to the left
-                  //     print("minimum is " + GridManagement.publicGrid.FirstColumnXPosition + " and this blocks x position is " + positionToSet.x);
-                positionToSet.x = curBlockPos.x - GridLayout.publicGrid.ColumnWidth;
-                directionToMove = BlockMovementDirection.left;
-            }*/
-        }
-        else
-        {
-            positionToSet.x = curBlockPos.x;
-            directionToMove = BlockMovementDirection.none;
-        }
+        int currentColumn = currentIndividualClass.MyGridCoords.column;
+        Vector2 currentColumnPos = gridManagement.GetPositionAtCoordinates(currentIndividualClass.MyGridCoords);
+        Vector2 inputPos = playerInput.InputPositionWorld;
 
-        if (positionToSet.x != curBlockPos.x)//we're going to move the block in some direction
-        {
-            //the block is placed partially in the cell at this point - it displaces other blocks but doesn't yet match with others
-            BlockIndividual currentBlockScript = currentlySelectedBlock.GetComponent<BlockIndividual>();
-            //gridManagement.SwapBlocks(currentBlockScript, directionToMove);
-
-            //int newBlockColumn = positionToSet.x > curBlockPos.x ? (int)currentBlockScript.MyGridIndex.x + 1 : (int)currentBlockScript.MyGridIndex.x - 1;
-            //columnManagement.CategorizeBlock((int)currentBlockScript.MyGridIndex.y, newBlockColumn, currentlySelectedBlock.GetComponent<BlockIndividual>());
-            //PlaceBlockInNewPosition(positionToSet);     
-        }
+        if (inputPos.x > currentColumnPos.x + columnChangeMargin && currentColumn != gridManagement.ColumnCount-1)
+            gridManagement.SwapBlock(currentIndividualClass, BlockMovementDirection.right);
+        else if (inputPos.x < currentColumnPos.x - columnChangeMargin && currentColumn != 0)
+            gridManagement.SwapBlock(currentIndividualClass, BlockMovementDirection.left);
     }
     
-    public void MoveBlockTransformToPosition(Transform blockToMove, Vector2 positionToMoveItTo)
-    {
-
-    }
-
     void ReleaseBlock()                                     //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
     {
-        BlockPlaced(currentIndividualClass);
+        matching.BlockPlaced(currentIndividualClass);
         currentIndividualClass.Fade(false);
         currentlySelectedBlock = null;
         currentIndividualClass = null;
        
         HideSelectionReference();
-    }
-    void BlockPlaced(BlockIndividual blockThatHasBeenPlaced)
-    {
-        //this block is officially in the grid now - check if it has any nearby matches
     }
     #endregion
     #region Selection

@@ -881,11 +881,12 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1039754172}
-  - component: {fileID: 1039754173}
   - component: {fileID: 1039754175}
   - component: {fileID: 1039754176}
+  - component: {fileID: 1039754173}
   - component: {fileID: 1039754177}
   - component: {fileID: 1039754178}
+  - component: {fileID: 1039754174}
   m_Layer: 0
   m_Name: blocks_parent
   m_TagString: Untagged
@@ -918,6 +919,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raiseSpeed: 0
+--- !u!114 &1039754174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1039754171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd2a9c33c399e8458b57574585a8edd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 1039754175}
+  currentBlockType: 0
+  currentBlock: {fileID: 0}
+  currentCoords:
+    column: 0
+    row: 0
+  gravityActionsToTrack: 0
+  currentlyTrackedGravityActions: 0
 --- !u!114 &1039754175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,19 +954,25 @@ MonoBehaviour:
   rowHeight: -1
   columnWidth: 1
   blockMovement: {fileID: 2026587502}
-  rowsFromTopOfGrid: 4
-  currentBottonRow: 11
+  rowsFromTopOfGrid: 3
+  currentBottonRow: 10
+  currentTopRow: 0
+  currentRowCount: 0
+  gridInitialized: 0
   showGridCenterLines: 0
   showGridOutlines: 0
   showGridOrigin: 0
   showCells: 1
-  gridInitialized: 0
+  debugQueryNow: 0
   debugGridQuery:
     column: 0
     row: 0
   queryBlockType: 0
   queryGameObject: {fileID: 0}
   queryLocalGridPosition:
+    column: 0
+    row: 0
+  returnedCellGridPosition:
     column: 0
     row: 0
 --- !u!114 &1039754176
@@ -962,7 +988,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManagement: {fileID: 1039754175}
   blockPool: {fileID: 1039754177}
-  blocksToCreate: 5
+  blocksToCreate: 28
   minRowToGenerateIn: 5
   likelihoodOfGeneratingBlock: 0.5
 --- !u!114 &1039754177
@@ -1127,10 +1153,15 @@ Prefab:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1048211023407686, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
     - {fileID: 114912779457476390, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
     - {fileID: 50816924486703426, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+    - {fileID: 61050615427941386, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1580599073
@@ -1327,6 +1358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInput: {fileID: 2026587503}
   gridManagement: {fileID: 1039754175}
+  matching: {fileID: 1039754174}
   currentlySelectedBlock: {fileID: 0}
   currentIndividualClass: {fileID: 0}
   columnChangeMargin: 0.6

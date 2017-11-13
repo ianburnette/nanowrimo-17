@@ -256,6 +256,7 @@
     <Compile Include="Assets\Easy Save 2\Examples\Upload and Download a Texture\UploadDownloadTexture.cs" />
     <Compile Include="Assets\Easy Save 2\Types\ES2_AudioClip.cs" />
     <Compile Include="Assets\GlobalBlockBehavior.cs" />
+    <Compile Include="Assets\Matching.cs" />
     <Compile Include="Assets\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\BlockDragging.cs" />
     <Compile Include="Assets\Scripts\BlockGeneration.cs" />

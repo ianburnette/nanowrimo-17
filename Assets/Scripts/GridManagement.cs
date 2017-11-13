@@ -22,6 +22,7 @@ public class BlockCell
     public Vector2 cellPosition;
     public GridCoordinates myCoordinates;
     public BlockIndividual blockInCell;
+    public bool currentlyPartOfAMatch;
 }
 
 public class GridManagement : MonoBehaviour {
@@ -35,21 +36,24 @@ public class GridManagement : MonoBehaviour {
     [Header ("References")]
     [SerializeField] BlockDragging blockMovement;
 
-    [Header("Level-specific variables")]
+    [Header("Dynamic variables")]
     [SerializeField] int rowsFromTopOfGrid;
-    [SerializeField] int currentBottonRow;
+    [SerializeField] int currentBottonRow, currentTopRow, currentRowCount;
+    [SerializeField] bool gridInitialized;
 
-    [Header("Debug Variables")]
+    [Header("Gizmo Variables")]
     [SerializeField] bool showGridCenterLines;
     [SerializeField] bool showGridOutlines;
     [SerializeField] bool showGridOrigin;
     [SerializeField] bool showCells;
-    [SerializeField] bool gridInitialized;
 
+    [Header("Debug Variables")]
+    [SerializeField] bool debugQueryNow;
     [SerializeField] GridCoordinates debugGridQuery;
     [SerializeField] BlockType queryBlockType;
     [SerializeField] GameObject queryGameObject;
     [SerializeField] GridCoordinates queryLocalGridPosition;
+    [SerializeField] GridCoordinates returnedCellGridPosition;
     #endregion
 
     #region Public Properties
@@ -104,18 +108,49 @@ public class GridManagement : MonoBehaviour {
             rowsFromTopOfGrid = value;
         }
     }
+
+    public int CurrentTopRow
+    {
+        get
+        {
+            return currentTopRow;
+        }
+
+        set
+        {
+            currentTopRow = value;
+        }
+    }
+
+    public int CurrentRowCount
+    {
+        get
+        {
+            return currentRowCount;
+        }
+
+        set
+        {
+            currentRowCount = value;
+        }
+    }
     #endregion
 
     #region Unity Functions
     void OnEnable () {
         publicGrid = this;
+       
+    }
+    private void Start()
+    {
         if (!gridInitialized)
             InitializeGrid();
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
-            QueryCell();
+        if (debugQueryNow)
+            DebugCell();
+        currentTopRow = currentBottonRow - currentRowCount;
     }
     private void OnDrawGizmos()
     {
@@ -123,11 +158,11 @@ public class GridManagement : MonoBehaviour {
         {
             Gizmos.color = Color.red;
             for (int i = 0; i < columnCount; i++) //for every column
-                for (int j = 0; j < rowsFromTopOfGrid; j++) //and every inaccessible row at the top
+                for (int j = 0; j < rowsFromTopOfGrid+1; j++) //and every inaccessible row at the top
                     Gizmos.DrawCube(blockGrid[i, j].cellPosition, new Vector3(.1f, .1f, .1f));
             Gizmos.color = Color.green;
             for (int i = 0; i < columnCount; i++) //for every column
-                for (int j = rowsFromTopOfGrid; j < rowCount; j++) //and every accessible row within every column
+                for (int j = rowsFromTopOfGrid+1; j < rowCount; j++) //and every accessible row within every column
                     Gizmos.DrawCube(blockGrid[i, j].cellPosition, new Vector3(.1f, .1f, .1f));
         }
     }
@@ -145,18 +180,11 @@ public class GridManagement : MonoBehaviour {
                 blockGrid[i, j] = new BlockCell();
                 blockGrid[i, j].cellPosition = (Vector2)transform.position +
                                                 new Vector2(columnWidth * i, rowHeight * j);
+                blockGrid[i, j].myCoordinates.column = i;
+                blockGrid[i, j].myCoordinates.row = j;
             }
         }
         gridInitialized = true;
-    }
-    void QueryCell()
-    {
-        if (blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell != null)
-        {
-            queryBlockType = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyType;
-            queryGameObject = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.gameObject;
-            queryLocalGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyGridCoords;
-        }
     }
     #endregion
     #region Block Placement
@@ -168,7 +196,7 @@ public class GridManagement : MonoBehaviour {
     }
     public void SwapBlock(BlockIndividual thisBlock, BlockMovementDirection directionToMove)
     {
-        BlockCell targetCell = GridQuery(thisBlock.MyGridCoords, directionToMove);
+        BlockCell targetCell = GridMovementQuery(thisBlock.MyGridCoords, directionToMove);
         GridCoordinates previousCoords = thisBlock.MyGridCoords;
         if (targetCell.blockInCell != null)
         {
@@ -196,12 +224,11 @@ public class GridManagement : MonoBehaviour {
             blockGrid[previousCoords.column, previousCoords.row].blockInCell = null;
             blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousCoords;
         }
-
     }
 
     #endregion
     #region Utility Functions
-    BlockCell GridQuery(GridCoordinates gridCoords, BlockMovementDirection movementDirection)
+    BlockCell GridMovementQuery(GridCoordinates gridCoords, BlockMovementDirection movementDirection)
     {
         switch (movementDirection)
         {
@@ -211,14 +238,32 @@ public class GridManagement : MonoBehaviour {
                 return blockGrid[gridCoords.column - 1, gridCoords.row];
             case BlockMovementDirection.right:
                 return blockGrid[gridCoords.column + 1, gridCoords.row];
+            case BlockMovementDirection.up:
+                return blockGrid[gridCoords.column, gridCoords.row - 1];
         }
         Debug.LogError("didn't find a direction to query so returning this block");
         return blockGrid[gridCoords.column, gridCoords.row];
+    }
+    public BlockCell GridCellQuery(GridCoordinates coords)
+    {
+        return blockGrid[coords.column, coords.row];
     }
     public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
     {
         return blockGrid[coords.column, coords.row].cellPosition;
     }
+    void DebugCell()
+    {
+        if (blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell != null)
+        {
+            queryBlockType = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyType;
+            queryGameObject = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.gameObject;
+            queryLocalGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyGridCoords;
+        }
+        returnedCellGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].myCoordinates;
+        debugQueryNow = false;
+    }
+
     #endregion
     /*
 void QueryCell()                            //a debug function to see what is in a particular cell

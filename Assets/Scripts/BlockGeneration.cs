@@ -47,10 +47,14 @@ public class BlockGeneration : MonoBehaviour {
                 {
                     currentCoords.column = i;
                     currentCoords.row = j;
-                    GameObject thisBlock = CreateBlock(gridManagement.GetPositionAtCoordinates(currentCoords));
+                    GameObject thisBlock = CreateBlock(currentCoords);
                     blocksCreated++;
+                    if (blocksCreated >= blocksToCreate)
+                        break;
                     yield return new WaitForEndOfFrame();
                 }
+                if (blocksCreated >= blocksToCreate)
+                    break;
             }
             yield return new WaitForEndOfFrame();
             timesThroughLoop++;
@@ -84,12 +88,16 @@ public class BlockGeneration : MonoBehaviour {
      }*/
 
 
-    GameObject CreateBlock(Vector2 position)
+    GameObject CreateBlock(GridCoordinates currentCoords)
     {
         GameObject createdBlock;
-        if (blockPool.TryGetNextObject(position, Quaternion.identity, out createdBlock))
+        //Vector2 position = gridManagement.GetPositionAtCoordinates(currentCoords);
+        if (blockPool.TryGetNextObject(transform.position, Quaternion.identity, out createdBlock))
         {
-            createdBlock.transform.position = position;
+            //createdBlock.transform.position = position;
+            BlockIndividual currentIndividual = createdBlock.GetComponent<BlockIndividual>();
+            currentIndividual.MyGridCoords = currentCoords;
+            gridManagement.SpawnBlock(currentIndividual, currentCoords);
             return createdBlock;
         }
         else
