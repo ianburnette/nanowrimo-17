@@ -255,16 +255,16 @@
     <Compile Include="Assets\Easy Save 2\Examples\Shared Assets\Scripts\MyExampleScript.cs" />
     <Compile Include="Assets\Easy Save 2\Examples\Upload and Download a Texture\UploadDownloadTexture.cs" />
     <Compile Include="Assets\Easy Save 2\Types\ES2_AudioClip.cs" />
-    <Compile Include="Assets\GlobalBlockBehavior.cs" />
-    <Compile Include="Assets\Matching.cs" />
-    <Compile Include="Assets\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\BlockDragging.cs" />
-    <Compile Include="Assets\Scripts\BlockGeneration.cs" />
     <Compile Include="Assets\Scripts\BlockIndividual.cs" />
+    <Compile Include="Assets\Scripts\BlockManagement.cs" />
     <Compile Include="Assets\Scripts\BlockRise.cs" />
+    <Compile Include="Assets\Scripts\GlobalBlockBehavior.cs" />
     <Compile Include="Assets\Scripts\GlobalMembers.cs" />
     <Compile Include="Assets\Scripts\GridLayout.cs" />
     <Compile Include="Assets\Scripts\GridManagement.cs" />
+    <Compile Include="Assets\Scripts\Matching.cs" />
+    <Compile Include="Assets\Scripts\PlayerInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Easy Save 2\changelog.txt" />

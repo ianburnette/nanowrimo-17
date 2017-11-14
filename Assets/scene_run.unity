@@ -930,12 +930,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fd2a9c33c399e8458b57574585a8edd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 1039754175}
+  gridManagement: {fileID: 1039754175}
+  blockManagement: {fileID: 1039754176}
   currentBlockType: 0
   currentBlock: {fileID: 0}
   currentCoords:
     column: 0
     row: 0
+  maxPossibleMatches: 0
+  maxBlocksPerMatch: 0
+  currentNumberOfMatches: 0
+  numberOfBlocksInCurrentMatch: 0
   gravityActionsToTrack: 0
   currentlyTrackedGravityActions: 0
 --- !u!114 &1039754175
@@ -957,7 +962,7 @@ MonoBehaviour:
   rowsFromTopOfGrid: 3
   currentBottonRow: 10
   currentTopRow: 0
-  currentRowCount: 0
+  currentRowCount: 10
   gridInitialized: 0
   showGridCenterLines: 0
   showGridOutlines: 0

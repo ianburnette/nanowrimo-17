@@ -95,9 +95,9 @@ public class BlockDragging : MonoBehaviour
         Vector2 inputPos = playerInput.InputPositionWorld;
 
         if (inputPos.x > currentColumnPos.x + columnChangeMargin && currentColumn != gridManagement.ColumnCount-1)
-            gridManagement.SwapBlock(currentIndividualClass, BlockMovementDirection.right);
+            gridManagement.SwapBlock(currentIndividualClass, GridDirection.right);
         else if (inputPos.x < currentColumnPos.x - columnChangeMargin && currentColumn != 0)
-            gridManagement.SwapBlock(currentIndividualClass, BlockMovementDirection.left);
+            gridManagement.SwapBlock(currentIndividualClass, GridDirection.left);
     }
     
     void ReleaseBlock()                                     //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
@@ -106,7 +106,7 @@ public class BlockDragging : MonoBehaviour
         currentIndividualClass.Fade(false);
         currentlySelectedBlock = null;
         currentIndividualClass = null;
-       
+        matching.ScanBoard();
         HideSelectionReference();
     }
     #endregion

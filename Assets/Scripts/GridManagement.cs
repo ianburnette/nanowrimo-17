@@ -8,7 +8,7 @@ public struct GridCoordinates
     public int row;
 }
 
-public enum BlockMovementDirection
+public enum GridDirection
 {
     up, 
     down, 
@@ -187,14 +187,14 @@ public class GridManagement : MonoBehaviour {
         gridInitialized = true;
     }
     #endregion
-    #region Block Placement
-    public void SpawnBlock(BlockIndividual thisBlock, GridCoordinates gridCoords)
+    #region Block Dynamic Functions
+    public void PutBlockIntoGrid(BlockIndividual thisBlock, GridCoordinates gridCoords)
     {
         thisBlock.transform.position = blockGrid[gridCoords.column, gridCoords.row].cellPosition;
         blockGrid[gridCoords.column, gridCoords.row].blockInCell = thisBlock;
         blockGrid[gridCoords.column, gridCoords.row].myCoordinates = thisBlock.MyGridCoords = gridCoords;
     }
-    public void SwapBlock(BlockIndividual thisBlock, BlockMovementDirection directionToMove)
+    public void SwapBlock(BlockIndividual thisBlock, GridDirection directionToMove)
     {
         BlockCell targetCell = GridMovementQuery(thisBlock.MyGridCoords, directionToMove);
         GridCoordinates previousCoords = thisBlock.MyGridCoords;
@@ -225,20 +225,23 @@ public class GridManagement : MonoBehaviour {
             blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousCoords;
         }
     }
-
+    public void RemoveBlockFromGrid(BlockIndividual thisBlock, GridCoordinates gridCoords)
+    {
+        blockGrid[gridCoords.column, gridCoords.row].blockInCell = thisBlock;
+    }
     #endregion
     #region Utility Functions
-    BlockCell GridMovementQuery(GridCoordinates gridCoords, BlockMovementDirection movementDirection)
+    BlockCell GridMovementQuery(GridCoordinates gridCoords, GridDirection movementDirection)
     {
         switch (movementDirection)
         {
-            case BlockMovementDirection.down:
+            case GridDirection.down:
                 return blockGrid[gridCoords.column, gridCoords.row + 1];
-            case BlockMovementDirection.left:
+            case GridDirection.left:
                 return blockGrid[gridCoords.column - 1, gridCoords.row];
-            case BlockMovementDirection.right:
+            case GridDirection.right:
                 return blockGrid[gridCoords.column + 1, gridCoords.row];
-            case BlockMovementDirection.up:
+            case GridDirection.up:
                 return blockGrid[gridCoords.column, gridCoords.row - 1];
         }
         Debug.LogError("didn't find a direction to query so returning this block");
@@ -246,6 +249,7 @@ public class GridManagement : MonoBehaviour {
     }
     public BlockCell GridCellQuery(GridCoordinates coords)
     {
+    
         return blockGrid[coords.column, coords.row];
     }
     public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
