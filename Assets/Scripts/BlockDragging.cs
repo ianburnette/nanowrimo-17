@@ -102,11 +102,11 @@ public class BlockDragging : MonoBehaviour
     
     void ReleaseBlock()                                     //THE PLAYER HAS RELEASED THE SELECTED BLOCK - PLACE THE BLOCK IN THE GRID
     {
-        matching.BlockPlaced(currentIndividualClass);
+        //matching.BlockPlaced(currentIndividualClass);
         currentIndividualClass.Fade(false);
         currentlySelectedBlock = null;
         currentIndividualClass = null;
-        matching.ScanBoard();
+        //matching.ScanBoard();
         HideSelectionReference();
     }
     #endregion

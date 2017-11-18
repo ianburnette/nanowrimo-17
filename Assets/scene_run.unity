@@ -886,7 +886,6 @@ GameObject:
   - component: {fileID: 1039754173}
   - component: {fileID: 1039754177}
   - component: {fileID: 1039754178}
-  - component: {fileID: 1039754174}
   m_Layer: 0
   m_Name: blocks_parent
   m_TagString: Untagged
@@ -919,30 +918,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raiseSpeed: 0
---- !u!114 &1039754174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1039754171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fd2a9c33c399e8458b57574585a8edd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridManagement: {fileID: 1039754175}
-  blockManagement: {fileID: 1039754176}
-  currentBlockType: 0
-  currentBlock: {fileID: 0}
-  currentCoords:
-    column: 0
-    row: 0
-  maxPossibleMatches: 0
-  maxBlocksPerMatch: 0
-  currentNumberOfMatches: 0
-  numberOfBlocksInCurrentMatch: 0
-  gravityActionsToTrack: 0
-  currentlyTrackedGravityActions: 0
 --- !u!114 &1039754175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -964,6 +939,7 @@ MonoBehaviour:
   currentTopRow: 0
   currentRowCount: 10
   gridInitialized: 0
+  blockSwapTime: 0.2
   showGridCenterLines: 0
   showGridOutlines: 0
   showGridOrigin: 0
@@ -993,7 +969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManagement: {fileID: 1039754175}
   blockPool: {fileID: 1039754177}
-  blocksToCreate: 28
+  blocksToCreate: 48
   minRowToGenerateIn: 5
   likelihoodOfGeneratingBlock: 0.5
 --- !u!114 &1039754177
@@ -1363,7 +1339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInput: {fileID: 2026587503}
   gridManagement: {fileID: 1039754175}
-  matching: {fileID: 1039754174}
+  matching: {fileID: 0}
   currentlySelectedBlock: {fileID: 0}
   currentIndividualClass: {fileID: 0}
   columnChangeMargin: 0.6

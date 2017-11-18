@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using UnityEngine;
+
 
 [Serializable]
 public struct GridCoordinates
@@ -40,6 +42,7 @@ public class GridManagement : MonoBehaviour {
     [SerializeField] int rowsFromTopOfGrid;
     [SerializeField] int currentBottonRow, currentTopRow, currentRowCount;
     [SerializeField] bool gridInitialized;
+    [SerializeField] float blockSwapTime;
 
     [Header("Gizmo Variables")]
     [SerializeField] bool showGridCenterLines;
@@ -138,8 +141,9 @@ public class GridManagement : MonoBehaviour {
 
     #region Unity Functions
     void OnEnable () {
-        publicGrid = this;
-       
+       if (publicGrid==null)
+            publicGrid = this;
+       DOTween.Init();
     }
     private void Start()
     {
@@ -201,22 +205,27 @@ public class GridManagement : MonoBehaviour {
         if (targetCell.blockInCell != null)
         {
             //store the target cell's values in temporary variables
-            Vector2 previousPos = thisBlock.transform.position;
+            Vector2 previousPos = blockGrid[thisBlock.MyGridCoords.column, thisBlock.MyGridCoords.row].cellPosition;//targetCell.cellPosition;//thisBlock.transform.position;
             BlockIndividual previousBlock = targetCell.blockInCell;
             //physically move the blocks
-            thisBlock.transform.position = targetCell.cellPosition;
-            targetCell.blockInCell.transform.position = previousPos;
+            // thisBlock.transform.position = targetCell.cellPosition;
+            thisBlock.transform.DOMove(targetCell.cellPosition, blockSwapTime);
+            targetCell.blockInCell.transform.DOMove(previousPos, blockSwapTime);
+            //DOTween.To(() => (Vector2)thisBlock.transform.position, x => thisBlock.transform.position = x, (Vector2)targetCell.cellPosition, blockSwapTime);
+            //DOTween.To(() => (Vector2)targetCell.blockInCell.transform.position, x => targetCell.blockInCell.transform.position = x, (Vector2)previousPos, blockSwapTime);
+
             //update the moving cell's values
             blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].blockInCell = thisBlock;
             blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].myCoordinates = thisBlock.MyGridCoords = targetCell.myCoordinates; ;
-            //update the displaced cell's values
+            //update the displaced c    ell's values
             blockGrid[previousCoords.column, previousCoords.row].blockInCell = previousBlock;
             blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousBlock.MyGridCoords = previousCoords;
         }
         else
-        { 
+        {
             //physically move the moving block
-            thisBlock.transform.position = targetCell.cellPosition;
+            //thisBlock.transform.position = targetCell.cellPosition;
+            thisBlock.transform.DOMove(targetCell.cellPosition, blockSwapTime);
             //update the new cell's values
             blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].blockInCell = thisBlock;
             blockGrid[targetCell.myCoordinates.column, targetCell.myCoordinates.row].myCoordinates = thisBlock.MyGridCoords = targetCell.myCoordinates; ;
@@ -225,9 +234,10 @@ public class GridManagement : MonoBehaviour {
             blockGrid[previousCoords.column, previousCoords.row].myCoordinates = previousCoords;
         }
     }
-    public void RemoveBlockFromGrid(BlockIndividual thisBlock, GridCoordinates gridCoords)
+    public void ClearGridCell(GridCoordinates gridCoords)
     {
-        blockGrid[gridCoords.column, gridCoords.row].blockInCell = thisBlock;
+        blockGrid[gridCoords.column, gridCoords.row].blockInCell = null;
+        blockGrid[gridCoords.column, gridCoords.row].currentlyPartOfAMatch = false;
     }
     #endregion
     #region Utility Functions
@@ -249,7 +259,7 @@ public class GridManagement : MonoBehaviour {
     }
     public BlockCell GridCellQuery(GridCoordinates coords)
     {
-    
+        print("coords are " + coords.column + coords.row);
         return blockGrid[coords.column, coords.row];
     }
     public Vector2 GetPositionAtCoordinates(GridCoordinates coords)
@@ -263,6 +273,12 @@ public class GridManagement : MonoBehaviour {
             queryBlockType = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyType;
             queryGameObject = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.gameObject;
             queryLocalGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].blockInCell.MyGridCoords;
+        }
+        else
+        {
+            queryBlockType = BlockType.none;
+            queryGameObject = null;
+            queryLocalGridPosition = new GridCoordinates();
         }
         returnedCellGridPosition = blockGrid[debugGridQuery.column, debugGridQuery.row].myCoordinates;
         debugQueryNow = false;

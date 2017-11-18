@@ -76,24 +76,23 @@ public class Matching : MonoBehaviour
     public void ScanBoard()
     {
         //run a gravity sweep on every column
-        /*
-        for (currentCoords.column = 0; currentCoords.column < gridManagement.ColumnCount-1; currentCoords.column++)
+        currentCoords.row = gridManagement.CurrentBottonRow + 1;
+        for (currentCoords.column = 0; currentCoords.column < gridManagement.ColumnCount; currentCoords.column++)
         {
+            print("in loop");
             CheckForUnsupportedBlocks(currentCoords);
-            if (currentlyTrackedGravityActions > 0)
-                ImplementGravity();
-        }*/
+            
+        }
         //iterate through the grid, working across each row from left to right and then up to the next row
-        for (currentCoords.row = gridManagement.CurrentBottonRow; currentCoords.row > gridManagement.CurrentTopRow; currentCoords.row--)
+        for (currentCoords.row = gridManagement.CurrentBottonRow; currentCoords.row >= gridManagement.CurrentTopRow; currentCoords.row--)
         {
-            for (currentCoords.column = 0; currentCoords.column < gridManagement.ColumnCount; currentCoords.column++)
+            for (currentCoords.column = 0; currentCoords.column < gridManagement.ColumnCount ; currentCoords.column++)
             {
                 currentCell = gridManagement.GridCellQuery(currentCoords);
-                if (currentCell.blockInCell != null && !currentCell.currentlyPartOfAMatch) //there's a block here and it's not currently part of any other matches, so check for matches
+               if (currentCell.blockInCell != null /*&& !currentCell.currentlyPartOfAMatch*/) //there's a block here and it's not currently part of any other matches, so check for matches
                 {
                     BlockType typeToMatch = currentCell.blockInCell.MyType;
-                    print(currentCoords.column);
-                    print(currentCoords.row);
+                //    print("checking " + currentCoords.column + ", " + currentCoords.row);
                     CheckCell(currentCell, currentCoords, typeToMatch);
                 }
             }
@@ -119,6 +118,7 @@ public class Matching : MonoBehaviour
     void CheckCell(BlockCell currentCell, GridCoordinates currentCoords, BlockType typeToMatch)
     {
         //check above this cell for matches
+      
         int currentRow = currentCoords.row;
         CheckInDirection(currentCoords, typeToMatch, GridDirection.up);
         if (numberOfBlocksInCurrentMatch >= 2)
@@ -128,36 +128,50 @@ public class Matching : MonoBehaviour
             currentNumberOfMatches++;
         }
         numberOfBlocksInCurrentMatch = 0;
-
+     
         //check to the right of this cell for matches
-        /*int currentColumn = currentCoords.column;
+        int currentColumn = currentCoords.column;
         CheckInDirection(currentCoords, typeToMatch, GridDirection.right);
         if (numberOfBlocksInCurrentMatch >= 2)
         {
             matches[currentNumberOfMatches, numberOfBlocksInCurrentMatch] = currentCell;
             currentCell.currentlyPartOfAMatch = true;
             currentNumberOfMatches++;
-        }*/
+        }
         numberOfBlocksInCurrentMatch = 0;
     }
     void CheckInDirection(GridCoordinates coords, BlockType typeToMatch, GridDirection dir)
     {
-        if (dir == GridDirection.up && coords.row > 0)
-            coords.row -= 1;                                                   //we're searching up, but the rows start at 0 and count down, so we want to subtract from the current row to move UP a row
-        else if (dir == GridDirection.right && coords.column < gridManagement.ColumnCount - 1)
-            coords.column += 1;
-        else
-            Debug.LogError("we're not supposed to be searching for matches in that direction, are we? dir = " + dir);
 
-        if (coords.column > gridManagement.ColumnCount - 1 || coords.row < 0)
-            print("checking for matches at " + coords.column + ", " + coords.row);
+        if (dir == GridDirection.up) {
+            if (coords.row > 0)
+                coords.row -= 1;
+            else
+                return;
+        }
+        else if (dir == GridDirection.right) {
+            if (coords.column < gridManagement.ColumnCount - 1)
+                coords.column += 1;
+            else
+                return;
+        }
+        else
+        {
+         //   print("checking for matches at " + coords.column + ", " + coords.row + ", which is impossible");
+            Debug.LogError("we're not supposed to be searching for matches in that direction, are we? dir = " + dir);
+            return;
+        }
+            
+
+        //if (coords.column > gridManagement.ColumnCount - 1 || coords.row < 0)
+        
         BlockCell cellToCheck = gridManagement.GridCellQuery(coords);
         if (cellToCheck.blockInCell != null)
         {
             if (cellToCheck.blockInCell.MyType == typeToMatch)
             {
                 cellToCheck.currentlyPartOfAMatch = true;
-                matches[currentNumberOfMatches, numberOfBlocksInCurrentMatch] = gridManagement.GridCellQuery(coords);
+                matches[currentNumberOfMatches, numberOfBlocksInCurrentMatch] = cellToCheck;//gridManagement.GridCellQuery(coords);
                 numberOfBlocksInCurrentMatch++;
                 CheckInDirection(coords, typeToMatch, dir);
             }
@@ -167,11 +181,13 @@ public class Matching : MonoBehaviour
     #region Gravity
     void CheckForUnsupportedBlocks(GridCoordinates startingCoords)
     {
-        GridCoordinates currentCoords = startingCoords;
         GridCoordinates destinationCoords = startingCoords;
         int blocksFoundInThisColumn = 0;
-        for (currentCoords.row = startingCoords.row + 1; currentCoords.row < gridManagement.CurrentTopRow; currentCoords.row++) //starting at the row above which we found an empty space and working up to the top of the board
+        GridCoordinates currentCoords = startingCoords;
+        for (int i = startingCoords.row; i > gridManagement.CurrentTopRow; i--) //starting at the row above which we found an empty space and working up to the top of the board
         {
+            currentCoords.column = currentCoords.column;
+            currentCoords.row = i;
             if (gridManagement.GridCellQuery(currentCoords).blockInCell != null) //we found an unsupported cell above an empty space
             {
                 gravActions[currentlyTrackedGravityActions].block = gridManagement.GridCellQuery(currentCoords).blockInCell;
@@ -181,11 +197,13 @@ public class Matching : MonoBehaviour
                 blocksFoundInThisColumn++;
             }
         }
+        if (currentlyTrackedGravityActions > 0)
+            ImplementGravity();
     }
     void ImplementGravity()
     {
         //gravity implemention will go here
-        currentlyTrackedGravityActions = 0;
+        //currentlyTrackedGravityActions = 0;
     }
     #endregion
     #region Public Functions

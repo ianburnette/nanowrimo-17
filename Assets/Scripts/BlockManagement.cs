@@ -84,7 +84,7 @@ public class BlockManagement : MonoBehaviour {
     public void DestroyBlock(BlockIndividual blockToDestroy, GridCoordinates blockCoordinates)
     {
         blockToDestroy.gameObject.SetActive(false);
-        gridManagement.RemoveBlockFromGrid(blockToDestroy, blockCoordinates);
+        gridManagement.ClearGridCell(blockCoordinates);
     }
     
 #endregion
