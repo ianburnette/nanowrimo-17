@@ -1010,6 +1010,30 @@ MonoBehaviour:
   spiritSprite: {fileID: 21300000, guid: 1ffd26a09d82dc3468b4bbcb69138bc0, type: 3}
   waterSprite: {fileID: 21300000, guid: 7e147ef634186964190dff40b4b699df, type: 3}
   woodSprite: {fileID: 21300000, guid: 9e98408a66781794a8ad98d9f3a94a02, type: 3}
+  noneLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  fireLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  iceLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  ghostLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  crateLayer:
+    serializedVersion: 2
+    m_Bits: 8192
+  spiritLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  waterLayer:
+    serializedVersion: 2
+    m_Bits: 16
+  woodLayer:
+    serializedVersion: 2
+    m_Bits: 65536
 --- !u!1 &1068115406
 GameObject:
   m_ObjectHideFlags: 0

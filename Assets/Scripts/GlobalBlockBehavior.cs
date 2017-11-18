@@ -13,8 +13,20 @@ public class GlobalBlockBehavior : MonoBehaviour {
 
     [Header("Sprites")]
     [SerializeField] Sprite fireSprite;
-    [SerializeField] Sprite iceSprite, ghostSprite, crateSprite, spiritSprite, waterSprite, woodSprite; 
-    
+    [SerializeField] Sprite iceSprite, ghostSprite, crateSprite, spiritSprite, waterSprite, woodSprite;
+
+    #region Layers
+    [Header("Layers")]
+    [SerializeField] private LayerMask noneLayer;
+    [SerializeField] private LayerMask fireLayer;
+    [SerializeField] private LayerMask iceLayer;
+    [SerializeField] private LayerMask ghostLayer;
+    [SerializeField] private LayerMask crateLayer;
+    [SerializeField] private LayerMask spiritLayer;
+    [SerializeField] private LayerMask waterLayer;
+    [SerializeField] private LayerMask woodLayer;
+    #endregion
+
     #endregion
 
     #region Public Properties
@@ -30,7 +42,6 @@ public class GlobalBlockBehavior : MonoBehaviour {
             fadeColor = value;
         }
     }
-
     public Color NormalColor
     {
         get
@@ -41,6 +52,102 @@ public class GlobalBlockBehavior : MonoBehaviour {
         set
         {
             normalColor = value;
+        }
+    }
+    public LayerMask NoneLayer
+    {
+        get
+        {
+            return noneLayer;
+        }
+
+        set
+        {
+            noneLayer = value;
+        }
+    }
+    public LayerMask FireLayer
+    {
+        get
+        {
+            return fireLayer;
+        }
+
+        set
+        {
+            fireLayer = value;
+        }
+    }
+    public LayerMask IceLayer
+    {
+        get
+        {
+            return iceLayer;
+        }
+
+        set
+        {
+            iceLayer = value;
+        }
+    }
+    public LayerMask GhostLayer
+    {
+        get
+        {
+            return ghostLayer;
+        }
+
+        set
+        {
+            ghostLayer = value;
+        }
+    }
+    public LayerMask CrateLayer
+    {
+        get
+        {
+            return crateLayer;
+        }
+
+        set
+        {
+            crateLayer = value;
+        }
+    }
+    public LayerMask SpiritLayer
+    {
+        get
+        {
+            return spiritLayer;
+        }
+
+        set
+        {
+            spiritLayer = value;
+        }
+    }
+    public LayerMask WaterLayer
+    {
+        get
+        {
+            return waterLayer;
+        }
+
+        set
+        {
+            waterLayer = value;
+        }
+    }
+    public LayerMask WoodLayer
+    {
+        get
+        {
+            return woodLayer;
+        }
+
+        set
+        {
+            woodLayer = value;
         }
     }
     #endregion

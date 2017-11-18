@@ -241,7 +241,7 @@ public class GridManagement : MonoBehaviour {
     }
     #endregion
     #region Utility Functions
-    BlockCell GridMovementQuery(GridCoordinates gridCoords, GridDirection movementDirection)
+    public BlockCell GridMovementQuery(GridCoordinates gridCoords, GridDirection movementDirection)
     {
         switch (movementDirection)
         {

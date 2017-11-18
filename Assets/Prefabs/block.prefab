@@ -136,6 +136,14 @@ MonoBehaviour:
   sprites:
   - {fileID: 212727490787363590}
   - {fileID: 212645023142907052}
+  inMatch: 0
+  blockMatchingLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  showRays: 1
+  matchesInDirections: 
+  rayOffset: 0.51
+  rayLength: 0.1
 --- !u!212 &212645023142907052
 SpriteRenderer:
   m_ObjectHideFlags: 1
