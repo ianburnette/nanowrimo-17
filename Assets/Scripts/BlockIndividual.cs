@@ -2,23 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
+[SelectionBase]
 public class BlockIndividual : MonoBehaviour {
 
     #region Private Variables
+    [Header("References")]
     [SerializeField] BlockType myType;
     [SerializeField] GridCoordinates myGridCoords;
     [SerializeField] SpriteRenderer[] sprites;
-    [SerializeField] bool inMatch = false;
-    [SerializeField] LayerMask blockMatchingLayer, blockPhysicsLayer;
-    [SerializeField] bool showRays;
-    [SerializeField] Ray2D[] rays;
+    [SerializeField] BoxCollider2D matchingCollider;
+    [SerializeField] Animator anim;
+
+    [Header("Match Detection")]
+    [SerializeField] LayerMask blockMatchingLayer;
+    [SerializeField] LayerMask blockPhysicsLayer;
     [Tooltip("up=0, down=1; left=2; right=3")]
     [SerializeField] bool[] matchesInDirections;
+
+    [Header("Matching Action")]
+    [SerializeField] bool inMatch = false;
+
+    [Header("Raycasting")]
+    [SerializeField] bool showRays;
     [SerializeField] float rayOffset;
     [SerializeField] float rayLength;
-    
+    [SerializeField] float debugRayLength;
+    [SerializeField] Ray2D[] rays;
     #endregion
 
     #region Public Properties
@@ -35,7 +44,7 @@ public class BlockIndividual : MonoBehaviour {
             ChangeLayerMask(myType);
         }
     }
-        public GridCoordinates MyGridCoords
+    public GridCoordinates MyGridCoords
     {
         get
         {
@@ -47,7 +56,7 @@ public class BlockIndividual : MonoBehaviour {
             myGridCoords = value;
         }
     }
-        public bool InMatch
+    public bool InMatch
     {
         get
         {
@@ -64,6 +73,7 @@ public class BlockIndividual : MonoBehaviour {
     #region Unity Functions
     void OnEnable()
     {
+        matchesInDirections = new bool[4];
         StartCoroutine(Setup());
     }
     private void Start()
@@ -74,10 +84,10 @@ public class BlockIndividual : MonoBehaviour {
         rays[2] = new Ray2D((Vector2)transform.position + new Vector2(-rayOffset, 0), Vector2.left * rayLength);
         rays[3] = new Ray2D((Vector2)transform.position + new Vector2(rayOffset, 0), Vector2.right * rayLength);
     }
-    void Update () {
+    void Update() {
         CheckForGravity();
         CheckForMatches();
-	}
+    }
     private void OnDisable()
     {
         inMatch = false;
@@ -88,8 +98,10 @@ public class BlockIndividual : MonoBehaviour {
     IEnumerator Setup()
     {
         yield return new WaitForEndOfFrame();
+        inMatch = false;
         MyType = GlobalMembers.SelectRandomType();
         sprites[1].sprite = GlobalBlockBehavior.publicGlobalBlockBehavior.GetSprite(myType);
+
         for (int i = 0; i < matchesInDirections.Length; i++)
             matchesInDirections[i] = false;
         yield return null;
@@ -118,32 +130,64 @@ public class BlockIndividual : MonoBehaviour {
         {
             for (int i = 0; i < rays.Length; i++)
             {
-                Debug.DrawRay(rays[i].origin, rays[i].direction * rayLength, Color.red);
+                //Debug.DrawRay(rays[i].origin, rays[i].direction * rayLength, matchesInDirections[i] == true ? Color.green : Color.red);
+                Debug.DrawRay(transform.position, rays[i].direction * debugRayLength, matchesInDirections[i] == true ? Color.green : Color.red);
             }
         }
-        if (!inMatch)
+        for (int i = 0; i < rays.Length; i++)
         {
-            for (int i = 0; i < rays.Length; i++)
+            RaycastHit2D hit;
+            hit = Physics2D.Raycast(rays[i].origin, rays[i].direction, rayLength, blockMatchingLayer);
+            if (hit.transform != null)
             {
-                RaycastHit2D hit;
-                hit = Physics2D.Raycast(rays[i].origin, rays[i].direction, rayLength, blockMatchingLayer);
-                if (hit.transform != null)
-                {
-                    inMatch = true;
-                    GridDirection dir = GetDirectionOfHit(i);
-                    SetMatchInDirection(i);
-                    HitBlockInDirection(dir, i);
-                }
+                GridDirection dir = GetDirectionOfHit(i);
+                SetMatchInDirection(i, true);
+                HitBlockInDirection(dir, i);
             }
+            else
+            {
+                SetMatchInDirection(i, false);
+            }
+        }
+        if (matchesInDirections[0] && matchesInDirections[1]) //if this block has a match above and below 
+        {
+            Match();
+            EnactMatchInDirection(0);
+            EnactMatchInDirection(1);
+        }
+        if (matchesInDirections[2] && matchesInDirections[3]) //if this block has matches to either side
+        {
+            Match();
+            EnactMatchInDirection(2);
+            EnactMatchInDirection(3);
         }
     }
-    public void SetMatchInDirection(int dir)
+    void Match()
     {
-        matchesInDirections[dir] = true;
+        inMatch = true;
+        anim.SetTrigger("fade");
+    }
+    void EnactMatchInDirection(int rawDir)
+    {
+        GridDirection dir = GetDirectionOfHit(rawDir);
+        GridDirection oppDir = GetDirectionOfHit(GetOppositeDirection(rawDir));
+        GridManagement.publicGrid.GridMovementQuery(myGridCoords, dir).blockInCell.MatchFromDir(oppDir);
+    }
+    void MatchFromDir(GridDirection matchFromDir)
+    {
+        //check if I have a match in the other direction, and then call this again on that block if so
+    }
+    public void DestroyBlock()      //called by animation when completed
+    {
+        this.enabled = false;
+    }
+    public void SetMatchInDirection(int dir, bool state)
+    {
+        matchesInDirections[dir] = state;
     }
     void HitBlockInDirection(GridDirection dir, int dirRaw)
     {
-        GridManagement.publicGrid.GridMovementQuery(myGridCoords, dir).blockInCell.SetMatchInDirection(GetOppositeDirection(dirRaw));
+        GridManagement.publicGrid.GridMovementQuery(myGridCoords, dir).blockInCell.SetMatchInDirection(GetOppositeDirection(dirRaw), true);
     }
     GridDirection GetDirectionOfHit(int inputDir)
     {
@@ -170,6 +214,19 @@ public class BlockIndividual : MonoBehaviour {
             case 2: return 3;
             case 3: return 2;
             default: return 0;
+        }
+    }
+    GridDirection GetOppositeDirection(GridDirection incomingDir)
+    {
+        switch (incomingDir)
+        {
+            case GridDirection.up: return GridDirection.down;
+            case GridDirection.down: return GridDirection.up;
+            case GridDirection.left: return GridDirection.right;
+            case GridDirection.right: return GridDirection.left;
+            default:
+                Debug.Log("trying to get the opposite of no direction?");
+                return GridDirection.left;
         }
     }
     void ChangeLayerMask(BlockType newType)
@@ -201,6 +258,7 @@ public class BlockIndividual : MonoBehaviour {
                 blockMatchingLayer = GlobalBlockBehavior.publicGlobalBlockBehavior.WoodLayer;
                 break;
         }
+        matchingCollider.gameObject.layer = (int)Mathf.Log(blockMatchingLayer.value, 2);
     }
-#endregion
+    #endregion
 }

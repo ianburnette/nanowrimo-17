@@ -248,9 +248,17 @@ public class GridManagement : MonoBehaviour {
             case GridDirection.down:
                 return blockGrid[gridCoords.column, gridCoords.row + 1];
             case GridDirection.left:
-                return blockGrid[gridCoords.column - 1, gridCoords.row];
+                if (gridCoords.column - 1 >= 0)
+                    return blockGrid[gridCoords.column - 1, gridCoords.row];
+                else
+                    Debug.Log("trying to move farther left than is possible");
+                    return blockGrid[gridCoords.column, gridCoords.row];
             case GridDirection.right:
-                return blockGrid[gridCoords.column + 1, gridCoords.row];
+                if (gridCoords.column + 1 < columnCount)
+                    return blockGrid[gridCoords.column + 1, gridCoords.row];
+                else
+                    Debug.Log("trying to move farther right than is possible");
+                return blockGrid[gridCoords.column, gridCoords.row];
             case GridDirection.up:
                 return blockGrid[gridCoords.column, gridCoords.row - 1];
         }

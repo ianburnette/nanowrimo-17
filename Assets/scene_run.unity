@@ -873,6 +873,92 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+--- !u!1001 &881934310
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -0.00001168251
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504131211412764, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212727490787363590, guid: a6c54ec5216fb20439c20877c73ed213,
+        type: 2}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212645023142907052, guid: a6c54ec5216fb20439c20877c73ed213,
+        type: 2}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: a6c54ec5216fb20439c20877c73ed213, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1 &881934311 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1048211023407686, guid: a6c54ec5216fb20439c20877c73ed213,
+    type: 2}
+  m_PrefabInternal: {fileID: 881934310}
+--- !u!95 &881934312
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 881934311}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3e91a8035bb8f1e4c891e91d0e5a4e1a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &1039754171
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,7 +1055,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManagement: {fileID: 1039754175}
   blockPool: {fileID: 1039754177}
-  blocksToCreate: 48
+  blocksToCreate: 49
   minRowToGenerateIn: 5
   likelihoodOfGeneratingBlock: 0.5
 --- !u!114 &1039754177
@@ -1367,6 +1453,9 @@ MonoBehaviour:
   currentlySelectedBlock: {fileID: 0}
   currentIndividualClass: {fileID: 0}
   columnChangeMargin: 0.6
+  blockSelectionLayer:
+    serializedVersion: 2
+    m_Bits: 256
   selectionBlockReference: {fileID: 511715338}
   offsetFromBlockCenter: {x: 0, y: 0}
   selectionReferenceSprite: {fileID: 511715339}

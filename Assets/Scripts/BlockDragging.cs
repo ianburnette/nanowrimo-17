@@ -18,6 +18,7 @@ public class BlockDragging : MonoBehaviour
 
     [Header("Behavior Variables")]
     [SerializeField] float columnChangeMargin;
+    [SerializeField] LayerMask blockSelectionLayer;
 
     [Header("UI Variables")]
     [SerializeField]
@@ -70,8 +71,10 @@ public class BlockDragging : MonoBehaviour
     }
     bool HitAtPosition(Vector2 pos)                      //THE USER TOUCHED/CLICKED - ARE THEY HITTING A BLOCK AT THAT LOCATION?
     {
-        RaycastHit2D hit = Physics2D.Raycast(new Vector3(pos.x, pos.y, -.5f), Vector3.forward);
-        if (hit != false && hit.collider != null)
+        RaycastHit2D hit = Physics2D.Raycast(new Vector3(pos.x, pos.y, -.5f), Vector3.forward, 11f, blockSelectionLayer);
+        if (hit != false)
+            print(hit.transform);
+        if (hit != false && hit.collider != null && hit.transform.tag == "tile")
         {
             SelectBlock(hit.transform.gameObject);
             ShowSelectionReference(hit.point, (Vector2)hit.transform.position);
